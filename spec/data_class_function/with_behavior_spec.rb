@@ -26,6 +26,11 @@ RSpec.describe Lab42::DataClass do
     it "inherits the behavior" do
       expect(almost.inc.to_h).to eq(a: 42)
     end
+
+    it "does not change the subject" do
+      almost
+      expect(subject.a).to be_zero
+    end
   end
 end
 #  SPDX-License-Identifier: Apache-2.0

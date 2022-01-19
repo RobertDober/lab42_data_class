@@ -11,18 +11,6 @@
 
 ### Making a dataclass from a class
 
-Given
-```ruby
-class LetterCounter
-  dataclass :consonants, :vowels
-end
-let(:counter) {Letter.counter.new(consonants: 0, vowels: 0)}
-```
-
-Then
-```ruby
-  expect(counter.consonants).to be_zero
-```
 
 
 # LICENSE
