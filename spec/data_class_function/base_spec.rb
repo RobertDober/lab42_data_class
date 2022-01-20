@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Lab42::DataClass do
-
   describe "a data class with only positional params" do
     subject { DataClass(:a, :b) }
     let(:correct_instance) { subject.new(a: 1, b: 2) }
@@ -11,7 +10,7 @@ RSpec.describe Lab42::DataClass do
     end
 
     it "raises an argument error for spurious keys too" do
-      expect{ subject.new(a: 1, b: 2, c: 3)}.to raise_error(ArgumentError, "illegal initializers [:c]")
+      expect{ subject.new(a: 1, b: 2, c: 3) }.to raise_error(ArgumentError, "illegal initializers [:c]")
     end
 
     it "but if all goes well" do
@@ -47,6 +46,5 @@ RSpec.describe Lab42::DataClass do
       expect(subject.to_h).to eq(a: 1, b: 2)
     end
   end
-
 end
 #  SPDX-License-Identifier: Apache-2.0

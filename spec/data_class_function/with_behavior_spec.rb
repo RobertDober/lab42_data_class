@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-#
+
 RSpec.describe Lab42::DataClass do
   describe "a data class with behavior" do
     subject do

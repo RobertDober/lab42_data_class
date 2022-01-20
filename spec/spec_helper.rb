@@ -14,7 +14,7 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-$: << File.expand_path(__dir__, '../lib/')
+$LOAD_PATH << File.expand_path(__dir__, '../lib/')
 require 'lab42/data_class'
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

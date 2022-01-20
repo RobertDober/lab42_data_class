@@ -44,7 +44,6 @@ module Lab42
         @___illegal_initializers__ ||=
           actual_params.keys - positionals - defaults.keys
       end
-
     end
   end
 end

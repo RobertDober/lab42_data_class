@@ -3,12 +3,11 @@
 require 'set'
 require_relative './data_class/proxy'
 
-
 module Kernel
   def DataClass(*args, **kwds, &blk)
     proxy = Lab42::DataClass::Proxy.new(*args, **kwds)
     klass = Class.new do
-      attr_reader *proxy.members
+      attr_reader(*proxy.members)
       define_method :initialize do |**params|
         proxy.check!(**params)
         proxy.init(self, **params)
