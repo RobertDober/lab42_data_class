@@ -14,6 +14,22 @@
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+require 'simplecov'
+SimpleCov.start do
+  if ENV['CI']
+    require 'simplecov-lcov'
+
+    SimpleCov::Formatter::LcovFormatter.config do |c|
+      c.report_with_single_file = true
+      c.single_report_path = 'coverage/lcov.info'
+    end
+
+    formatter SimpleCov::Formatter::LcovFormatter
+  end
+
+  add_filter %w[version.rb initializer.rb]
+end
+
 $LOAD_PATH << File.expand_path(__dir__, '../lib/')
 require 'lab42/data_class'
 RSpec.configure do |config|
