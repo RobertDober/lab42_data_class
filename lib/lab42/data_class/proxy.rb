@@ -89,11 +89,6 @@ module Lab42
         end
       end
 
-      def _meval(&blk)
-        myself = self
-        klass.module_eval{ blk.(myself) }
-      end
-
       def _missing_initializers
         @___missing_initializers__ ||=
           positionals - actual_params.keys
