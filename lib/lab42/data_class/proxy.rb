@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'set'
 module Lab42
   module DataClass
     class Proxy

@@ -8,6 +8,25 @@
 
 A dataclass with an immutable API (you can still change the state of the object with metaprogramming and `lab42_immutable` is not ready yet!)
 
+## Usage
+
+```sh
+gem install lab42_data_class
+```
+
+With bundler
+
+```ruby
+  gem 'lab42_data_class'
+```
+
+In your code
+
+```ruby
+require 'lab42/data_class'
+```
+
+
 ## So what does it do?
 
 Well let us [speculate about](https://github.com/RobertDober/speculate_about) it to find out:
