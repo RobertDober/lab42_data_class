@@ -110,6 +110,27 @@ And we have a nice name for our instances
     expect(DC.new.class.name).to eq("DC")
 ```
 
+### Context: Equality
+
+Given two instances of a DataClass
+```ruby
+    let(:data_class) { DataClass :a }
+    let(:instance1) { data_class.new(a: 1) }
+    let(:instance2) { data_class.new(a: 1) }
+```
+Then they are equal in the sense of `==` and `eql?`
+```ruby
+    expect(instance1).to eq(instance2)
+    expect(instance2).to eq(instance1)
+    expect(instance1 == instance2).to be_truthy
+    expect(instance2 == instance1).to be_truthy
+```
+But not in the sense of `equal?`, of course
+```ruby
+    expect(instance1).not_to be_equal(instance2)
+    expect(instance2).not_to be_equal(instance1)
+```
+
 # LICENSE
 
 Copyright 2022 Robert Dober robert.dober@gmail.com

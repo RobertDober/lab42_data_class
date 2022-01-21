@@ -16,6 +16,7 @@
 
 require 'simplecov'
 SimpleCov.start do
+  add_filter "/spec/"
   if ENV['CI']
     require 'simplecov-lcov'
 

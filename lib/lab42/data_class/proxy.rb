@@ -48,6 +48,15 @@ module Lab42
         end
       end
 
+      def _define_eql?
+        ->(*) do
+          define_method :== do |other|
+            other.is_a?(self.class) &&
+              to_h == other.to_h
+          end
+        end
+      end
+
       def _define_initializer
         proxy = self
         ->(*) do
@@ -72,6 +81,7 @@ module Lab42
       def _define_methods
         klass.module_eval(&_define_to_h)
         klass.module_eval(&_define_merge)
+        klass.module_eval(&_define_eql?)
         klass.module_eval(&block) if block
       end
 
