@@ -40,6 +40,9 @@ Naming/MemoizedInstanceVariableName:
 Naming/MethodName:
   Enabled: false
 
+Naming/MethodParameterName:
+  Enabled: false
+
 Style/BlockComments:
   Exclude:
     - "spec/spec_helper.rb"

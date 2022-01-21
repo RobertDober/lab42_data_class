@@ -1,10 +1,18 @@
 require_relative "lib/lab42/data_class/version"
 version = Lab42::DataClass::VERSION
+
+description = <<~DESCRIPTION
+  An Immutable DataClass for Ruby
+
+  Exposes a class factory function `Kernel::DataClass` and a class
+  modifer `Module#dataclass'
+DESCRIPTION
+
 Gem::Specification.new do |s|
   s.name        = 'lab42_data_class'
   s.version     = version
   s.summary     = 'Finally a dataclass in ruby'
-  s.description = %(introduces a new Kernel function DataClass)
+  s.description = description
   s.authors     = ["Robert Dober"]
   s.email       = 'robert.dober@gmail.com'
   s.files       = Dir.glob("lib/**/*.rb")

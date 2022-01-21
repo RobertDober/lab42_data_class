@@ -57,6 +57,14 @@ module Lab42
         end
       end
 
+      def _define_freezing_constructor
+        ->(*) do
+          define_method :new do |*a, **p, &b|
+            super(*a, **p, &b).freeze
+          end
+        end
+      end
+
       def _define_initializer
         proxy = self
         ->(*) do
@@ -79,6 +87,7 @@ module Lab42
       end
 
       def _define_methods
+        (class << klass; self end).module_eval(&_define_freezing_constructor)
         klass.module_eval(&_define_to_h)
         klass.module_eval(&_define_merge)
         klass.module_eval(&_define_eql?)

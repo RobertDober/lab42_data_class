@@ -6,7 +6,7 @@
 
 # Lab42::DataClass
 
-A dataclass with an immutable API (you can still change the state of the object with metaprogramming and `lab42_immutable` is not ready yet!)
+An immutable dataclass
 
 ## Usage
 
@@ -60,7 +60,18 @@ And we can extract the values
     expect(my_instance.to_h).to eq(name: "robert", email: nil)
 ```
 
-#### Context: Immutable
+#### Context: Immutable → self
+
+Then `my_instance` is frozen:
+```ruby
+    expect(my_instance).to be_frozen
+```
+And we cannot even mute `my_instance`  by means of metaprogramming
+```ruby
+    expect{ my_instance.instance_variable_set("@x", nil) }.to raise_error(FrozenError)
+```
+
+#### Context: Immutable → Cloning
 
 Given
 ```ruby
@@ -70,6 +81,10 @@ Then we have a new instance with the old instance unchanged
 ```ruby
     expect(other_instance.to_h).to eq(name: "robert", email: "robert@mail.provider")
     expect(my_instance.to_h).to eq(name: "robert", email: nil)
+```
+And the new instance is frozen again
+```ruby
+    expect(other_instance).to be_frozen
 ```
 
 ### Context: Defining behavior with blocks
@@ -131,6 +146,12 @@ But not in the sense of `equal?`, of course
     expect(instance2).not_to be_equal(instance1)
 ```
 
+#### Immutability of `dataclass` modified classes
+
+Then we still get frozen instances
+```ruby
+    expect(instance1).to be_frozen
+```
 # LICENSE
 
 Copyright 2022 Robert Dober robert.dober@gmail.com
