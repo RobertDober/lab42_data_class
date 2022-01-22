@@ -105,25 +105,6 @@ Then I have defined a method on my dataclass
 ```ruby
     expect(my_instance.show).to eq("<42>")
 ```
-### Context: Making a dataclass from a class
-
-Given
-```ruby
-    class DC
-      dataclass x: 1, y: 41
-      def sum; x + y end
-    end
-```
-
-Then we can define methods on it
-```ruby
-   expect(DC.new.sum).to eq(42)
-```
-
-And we have a nice name for our instances
-```ruby
-    expect(DC.new.class.name).to eq("DC")
-```
 
 ### Context: Equality
 
@@ -146,12 +127,59 @@ But not in the sense of `equal?`, of course
     expect(instance2).not_to be_equal(instance1)
 ```
 
-#### Immutability of `dataclass` modified classes
+#### Context: Immutability of `dataclass` modified classes
 
 Then we still get frozen instances
 ```ruby
     expect(instance1).to be_frozen
 ```
+
+### Context: Inheritance
+
+... is a no, we do not want inheritance although we **like** code reuse, how to do it then?
+
+Well there shall be many different possibilities, depending on your style, use case and
+context, here is just one example:
+
+Given a class factory
+```ruby
+    let :token do
+      ->(*a, **k) do
+        DataClass(*a, **(k.merge(text: "")))
+        end
+    end
+```
+
+Then we have reused the `token` successfully
+```ruby
+    empty = token.()
+    integer = token.(:value)
+    boolean = token.(value: false)
+
+    expect(empty.new.to_h).to eq(text: "")
+    expect(integer.new(value: -1).to_h).to eq(text: "", value: -1)
+    expect(boolean.new.value).to eq(false)
+```
+
+#### Context: Mixing in a module can be used of course
+
+Given a behavior like
+```ruby
+    module Humanize
+      def humanize
+        "my value is #{value}"
+      end
+    end
+
+    let(:class_level) { DataClass(value: 1).include(Humanize) }
+```
+
+Then we can access the included method
+```ruby
+    expect(class_level.new.humanize).to eq("my value is 1")
+```
+
+
 # LICENSE
 
 Copyright 2022 Robert Dober robert.dober@gmail.com

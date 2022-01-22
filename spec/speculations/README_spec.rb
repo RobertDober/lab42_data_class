@@ -61,38 +61,59 @@ RSpec.describe "README.md" do
       expect(my_instance.show).to eq("<42>")
     end
   end
-  # README.md:108
-  context "Making a dataclass from a class" do
-    # README.md:111
-    class DC
-    dataclass x: 1, y: 41
-    def sum; x + y end
-    end
-    it "we can define methods on it (README.md:119)" do
-      expect(DC.new.sum).to eq(42)
-    end
-    it "we have a nice name for our instances (README.md:124)" do
-      expect(DC.new.class.name).to eq("DC")
-    end
-  end
-  # README.md:128
+  # README.md:109
   context "Equality" do
-    # README.md:131
+    # README.md:112
     let(:data_class) { DataClass :a }
     let(:instance1) { data_class.new(a: 1) }
     let(:instance2) { data_class.new(a: 1) }
-    it "they are equal in the sense of `==` and `eql?` (README.md:137)" do
+    it "they are equal in the sense of `==` and `eql?` (README.md:118)" do
       expect(instance1).to eq(instance2)
       expect(instance2).to eq(instance1)
       expect(instance1 == instance2).to be_truthy
       expect(instance2 == instance1).to be_truthy
     end
-    it "not in the sense of `equal?`, of course (README.md:144)" do
+    it "not in the sense of `equal?`, of course (README.md:125)" do
       expect(instance1).not_to be_equal(instance2)
       expect(instance2).not_to be_equal(instance1)
     end
-    it "we still get frozen instances (README.md:152)" do
-      expect(instance1).to be_frozen
+    # README.md:130
+    context "Immutability of `dataclass` modified classes" do
+      it "we still get frozen instances (README.md:133)" do
+        expect(instance1).to be_frozen
+      end
+    end
+  end
+  # README.md:137
+  context "Inheritance" do
+    # README.md:145
+    let :token do
+    ->(*a, **k) do
+    DataClass(*a, **(k.merge(text: "")))
+    end
+    end
+    it "we have reused the `token` successfully (README.md:154)" do
+      empty = token.()
+      integer = token.(:value)
+      boolean = token.(value: false)
+      
+      expect(empty.new.to_h).to eq(text: "")
+      expect(integer.new(value: -1).to_h).to eq(text: "", value: -1)
+      expect(boolean.new.value).to eq(false)
+    end
+    # README.md:164
+    context "Mixing in a module can be used of course" do
+      # README.md:167
+      module Humanize
+      def humanize
+      "my value is #{value}"
+      end
+      end
+      
+      let(:class_level) { DataClass(value: 1).include(Humanize) }
+      it "we can access the included method (README.md:178)" do
+        expect(class_level.new.humanize).to eq("my value is 1")
+      end
     end
   end
 end

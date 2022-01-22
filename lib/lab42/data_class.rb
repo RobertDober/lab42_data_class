@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative './data_class/for_module'
 require_relative './data_class/proxy'
 
 module Kernel

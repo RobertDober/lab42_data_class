@@ -4,7 +4,7 @@ require 'set'
 module Lab42
   module DataClass
     class Proxy
-      attr_reader :actual_params, :block, :defaults, :klass, :has_parent, :members, :positionals
+      attr_reader :actual_params, :block, :defaults, :klass, :members, :positionals
 
       def check!(**params)
         @actual_params = params
@@ -31,8 +31,7 @@ module Lab42
 
       private
       def initialize(*args, **kwds, &blk)
-        @klass = kwds.fetch(:__klass__){ Class.new }
-        @has_parent = !!kwds.delete(:__klass__)
+        @klass = Class.new
 
         @block = blk
         @defaults = kwds
@@ -80,7 +79,7 @@ module Lab42
         ->(*) do
           define_method :merge do |**params|
             values = to_h.merge(params)
-            DataClass(*proxy.positionals, __klass__: self.class, **proxy.defaults, &proxy.block)
+            DataClass(*proxy.positionals, **proxy.defaults, &proxy.block)
               .new(**values)
           end
         end
