@@ -116,4 +116,28 @@ RSpec.describe "README.md" do
       end
     end
   end
+  # README.md:182
+  context "Pattern Matching" do
+    # README.md:187
+    let(:numbers) { DataClass(:name, values: []) }
+    let(:odds) { numbers.new(name: "odds", values: (1..4).map{ _1 + _1 + 1}) }
+    let(:evens) { numbers.new(name: "evens", values: (1..4).map{ _1 + _1}) }
+    it "we can match accordingly (README.md:194)" do
+      match = case odds
+      in {name: "odds", values: [1, *]}
+      :not_really
+      in {name: "evens"}
+      :still_naaah
+      in {name: "odds", values: [hd, *]}
+      hd
+      else
+      :strange
+      end
+      expect(match).to eq(3)
+    end
+    it "in `in` expressions (README.md:209)" do
+      evens => {values: [_, second, *]}
+      expect(second).to eq(4)
+    end
+  end
 end
