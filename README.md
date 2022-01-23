@@ -179,6 +179,37 @@ Then we can access the included method
     expect(class_level.new.humanize).to eq("my value is 1")
 ```
 
+### Context: Pattern Matching
+
+An `DataClass` object behaves like the result of it's `to_h` in pattern matching
+
+Given
+```ruby
+    let(:numbers) { DataClass(:name, values: []) }
+    let(:odds) { numbers.new(name: "odds", values: (1..4).map{ _1 + _1 + 1}) }
+    let(:evens) { numbers.new(name: "evens", values: (1..4).map{ _1 + _1}) }
+```
+
+Then we can match accordingly
+```ruby
+    match = case odds
+            in {name: "odds", values: [1, *]}
+              :not_really
+            in {name: "evens"}
+              :still_naaah
+            in {name: "odds", values: [hd, *]}
+              hd
+            else
+              :strange
+            end
+    expect(match).to eq(3)
+```
+
+And in `in` expressions
+```ruby
+    evens => {values: [_, second, *]}
+    expect(second).to eq(4)
+```
 
 # LICENSE
 
