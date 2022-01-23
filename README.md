@@ -181,7 +181,7 @@ Then we can access the included method
 
 ### Context: Pattern Matching
 
-An `DataClass` object behaves like the result of it's `to_h` in pattern matching
+A `DataClass` object behaves like the result of it's `to_h` in pattern matching
 
 Given
 ```ruby
