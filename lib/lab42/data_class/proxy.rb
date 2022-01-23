@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'set'
+require_relative 'proxy/mixin'
 module Lab42
   module DataClass
     class Proxy
@@ -16,6 +17,8 @@ module Lab42
         klass.module_eval(&_define_attr_reader)
         klass.module_eval(&_define_initializer)
         _define_methods
+        klass.include(Mixin)
+        klass.module_eval(&block) if block
         klass
       end
 
@@ -44,15 +47,6 @@ module Lab42
         proxy = self
         ->(*) do
           attr_reader(*proxy.members)
-        end
-      end
-
-      def _define_eql?
-        ->(*) do
-          define_method :== do |other|
-            other.is_a?(self.class) &&
-              to_h == other.to_h
-          end
         end
       end
 
@@ -89,8 +83,6 @@ module Lab42
         (class << klass; self end).module_eval(&_define_freezing_constructor)
         klass.module_eval(&_define_to_h)
         klass.module_eval(&_define_merge)
-        klass.module_eval(&_define_eql?)
-        klass.module_eval(&block) if block
       end
 
       def _define_to_h
