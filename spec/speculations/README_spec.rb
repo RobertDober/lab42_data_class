@@ -139,5 +139,23 @@ RSpec.describe "README.md" do
       evens => {values: [_, second, *]}
       expect(second).to eq(4)
     end
+    # README.md:214
+    context "In Case Statements" do
+      # README.md:217
+      let(:box) { DataClass content: nil }
+      it "we can also use it in a case statement (README.md:222)" do
+        value = case box.new
+        when box
+        42
+        else
+        0
+        end
+        expect(value).to eq(42)
+      end
+      it "all the associated methods (README.md:233)" do
+        expect(box.new).to be_a(box)
+        expect(box === box.new).to be_truthy
+      end
+    end
   end
 end

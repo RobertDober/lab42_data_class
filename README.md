@@ -211,6 +211,30 @@ And in `in` expressions
     expect(second).to eq(4)
 ```
 
+#### Context: In Case Statements
+
+Given a nice little dataclass `Box`
+```ruby
+    let(:box) { DataClass content: nil }
+```
+
+Then we can also use it in a case statement
+```ruby
+    value = case box.new
+      when box
+        42
+      else
+        0
+      end
+    expect(value).to eq(42)
+```
+
+And all the associated methods
+```ruby
+    expect(box.new).to be_a(box)
+    expect(box === box.new).to be_truthy
+```
+
 # LICENSE
 
 Copyright 2022 Robert Dober robert.dober@gmail.com
