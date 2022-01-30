@@ -158,4 +158,15 @@ RSpec.describe "README.md" do
       end
     end
   end
+  # README.md:238
+  context "Behaving like a proc" do
+    # README.md:243
+    let(:class1) { DataClass :value }
+    let(:class2) { DataClass :value }
+    # README.md:249
+    let(:list) {[class1.new(value: 1), class2.new(value: 2), class1.new(value: 3)]}
+    it "we can filter (README.md:254)" do
+      expect(list.filter(&class2)).to eq([class2.new(value: 2)])
+    end
+  end
 end

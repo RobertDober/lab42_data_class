@@ -81,6 +81,7 @@ module Lab42
 
       def _define_methods
         (class << klass; self end).module_eval(&_define_freezing_constructor)
+        (class << klass; self end).module_eval(&_define_to_proc)
         klass.module_eval(&_define_to_h)
         klass.module_eval(&_define_merge)
       end
@@ -90,6 +91,14 @@ module Lab42
         ->(*) do
           define_method :to_h do
             proxy.to_hash(self)
+          end
+        end
+      end
+
+      def _define_to_proc
+        ->(*) do
+          define_method :to_proc do
+            ->(other) { self === other }
           end
         end
       end

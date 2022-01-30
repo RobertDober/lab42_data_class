@@ -235,6 +235,26 @@ And all the associated methods
     expect(box === box.new).to be_truthy
 ```
 
+### Context: Behaving like a proc
+
+It is useful to be able to filter heterogeneous lists of `DataClass` instances by means of `&to_proc`, therefore
+
+Given two different `DataClass` objects
+```ruby
+    let(:class1) { DataClass :value }
+    let(:class2) { DataClass :value }
+```
+
+And a list of instances
+```ruby
+    let(:list) {[class1.new(value: 1), class2.new(value: 2), class1.new(value: 3)]}
+```
+
+Then we can filter
+```ruby
+    expect(list.filter(&class2)).to eq([class2.new(value: 2)])
+```
+
 # LICENSE
 
 Copyright 2022 Robert Dober robert.dober@gmail.com
