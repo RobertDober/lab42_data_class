@@ -92,6 +92,7 @@ module Lab42
           define_method :to_h do
             proxy.to_hash(self)
           end
+          alias_method :to_hash, :to_h
         end
       end
 

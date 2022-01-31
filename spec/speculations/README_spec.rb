@@ -159,7 +159,7 @@ RSpec.describe "README.md" do
     end
   end
   # README.md:238
-  context "Behaving like a proc" do
+  context "Behaving like a `Proc`" do
     # README.md:243
     let(:class1) { DataClass :value }
     let(:class2) { DataClass :value }
@@ -167,6 +167,18 @@ RSpec.describe "README.md" do
     let(:list) {[class1.new(value: 1), class2.new(value: 2), class1.new(value: 3)]}
     it "we can filter (README.md:254)" do
       expect(list.filter(&class2)).to eq([class2.new(value: 2)])
+    end
+  end
+  # README.md:258
+  context "Behaving like a `Hash`" do
+    # README.md:264
+    def extract_value(value:, **others)
+    [value, others]
+    end
+    # README.md:270
+    let(:my_class) { DataClass(value: 1, base: 2) }
+    it "we can pass it as keyword arguments (README.md:275)" do
+      expect(extract_value(**my_class.new)).to eq([1, base: 2])
     end
   end
 end

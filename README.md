@@ -235,7 +235,7 @@ And all the associated methods
     expect(box === box.new).to be_truthy
 ```
 
-### Context: Behaving like a proc
+### Context: Behaving like a `Proc`
 
 It is useful to be able to filter heterogeneous lists of `DataClass` instances by means of `&to_proc`, therefore
 
@@ -254,6 +254,28 @@ Then we can filter
 ```ruby
     expect(list.filter(&class2)).to eq([class2.new(value: 2)])
 ```
+
+### Context: Behaving like a `Hash`
+
+We have already seen the `to_h` method, however if we want to pass an instance of `DataClass` as 
+keyword parameters we need an implementation of `to_hash`, which of course is just an alias
+
+Given this keyword method
+```ruby
+    def extract_value(value:, **others)
+      [value, others]
+    end
+```
+And this `DataClass`:
+```ruby
+    let(:my_class) { DataClass(value: 1, base: 2) }
+```
+
+Then we can pass it as keyword arguments
+```ruby
+    expect(extract_value(**my_class.new)).to eq([1, base: 2])
+```
+
 
 # LICENSE
 
