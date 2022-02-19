@@ -8,7 +8,7 @@
 
 # Lab42::DataClass
 
-An immutable dataclass
+An immutable Dataclass, Tuples and Triples
 
 ## Usage
 
@@ -32,6 +32,8 @@ require 'lab42/data_class'
 ## So what does it do?
 
 Well let us [speculate about](https://github.com/RobertDober/speculate_about) it to find out:
+
+## Context `DataClass`
 
 ### Context: `DataClass` function
 
@@ -278,6 +280,62 @@ Then we can pass it as keyword arguments
     expect(extract_value(**my_class.new)).to eq([1, base: 2])
 ```
 
+## Context: `Pair` and `Triple`
+
+Two special cases of a `DataClass` which behave like `Tuple` of size 2 and 3 in _Elixir_
+
+
+They distinguish themselves from `DataClass` classes by accepting only positional arguments, and
+cannot be converted to hashes.
+
+These are actually two classes and not class factories as they have a fixed interface , but let us speculate about them to learn what they can do for us.
+
+### Context: Constructor functions
+
+Given a pair
+```ruby
+    let(:token) { Pair("12", 12) }
+    let(:node)  { Triple("42", 4, 2) }
+```
+
+Then we can access their elements
+```ruby
+    expect(token.first).to eq("12")
+    expect(token.second).to eq(12)
+    expect(node.first).to eq("42")
+    expect(node.second).to eq(4)
+    expect(node.third).to eq(2)
+```
+
+And we can treat them like _Indexable_
+```ruby
+    expect(token[1]).to eq(12)
+    expect(token[-2]).to eq("12")
+    expect(node[2]).to eq(2)
+```
+
+And convert them to arrays of course
+```ruby
+    expect(token.to_a).to eq(["12", 12])
+    expect(node.to_a).to eq(["42", 4, 2])
+```
+
+And they behave like arrays in pattern matching too
+```ruby
+    token => [str, int]
+    node  => [root, lft, rgt]
+    expect(str).to eq("12")
+    expect(int).to eq(12)
+    expect(root).to eq("42")
+    expect(lft).to eq(4)
+    expect(rgt).to eq(2)
+```
+
+And of course the factory functions are equivalent to the constructors
+```ruby
+    expect(token).to eq(Lab42::Pair.new("12", 12))
+    expect(node).to eq(Lab42::Triple.new("42", 4, 2))
+```
 
 # LICENSE
 
