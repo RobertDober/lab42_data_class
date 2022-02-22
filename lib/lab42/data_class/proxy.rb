@@ -69,12 +69,10 @@ module Lab42
       end
 
       def _define_merge
-        proxy = self
         ->(*) do
           define_method :merge do |**params|
             values = to_h.merge(params)
-            DataClass(*proxy.positionals, **proxy.defaults, &proxy.block)
-              .new(**values)
+            self.class.new(**values)
           end
         end
       end
