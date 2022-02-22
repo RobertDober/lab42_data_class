@@ -8,7 +8,12 @@
 
 # Lab42::DataClass
 
-An immutable Dataclass, Tuples and Triples
+
+An Immutable DataClass for Ruby
+
+Exposes a class factory function `Kernel::DataClass` and a class
+modifer `Module#dataclass', also creates two _tuple_ classes, `Pair` and
+`Triple`
 
 ## Usage
 
