@@ -285,6 +285,42 @@ Then we can pass it as keyword arguments
     expect(extract_value(**my_class.new)).to eq([1, base: 2])
 ```
 
+### Context: Constraints
+
+Values of attributes of a `DataClass` can have constraints
+
+Given a `DataClass` with constraints
+```ruby
+    let :switch do
+      DataClass(on: false).with_constraint(on: -> { [false, true].member? _1 })
+    end
+```
+
+Then boolean values are acceptable
+```ruby
+    expect{ switch.new }.not_to raise_error
+    expect(switch.new.merge(on: true).on).to eq(true)
+```
+
+But we can neither construct or merge with non boolean values
+```ruby
+    expect{ switch.new(on: nil) }
+     .to raise_error(Lab42::DataClass::ConstraintError, "value nil is not allowed for attribute :on")
+    expect{ switch.new.merge(on: 42) }
+     .to raise_error(Lab42::DataClass::ConstraintError, "value 42 is not allowed for attribute :on")
+```
+
+And therefore defaultless attributes cannot have a constraint that is violated by a nil value
+```ruby
+    error_head = "constraint error during validation of default value of attribute :value"
+    error_body = "  undefined method `>' for nil:NilClass"
+    error_message = [error_head, error_body].join("\n")
+
+    expect{ DataClass(value: nil).with_constraint(value: -> { _1 > 0 }) }
+      .to raise_error(Lab42::DataClass::ConstraintError, /#{error_message}/)
+```
+
+
 ## Context: `Pair` and `Triple`
 
 Two special cases of a `DataClass` which behave like `Tuple` of size 2 and 3 in _Elixir_

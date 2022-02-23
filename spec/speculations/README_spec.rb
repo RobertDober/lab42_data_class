@@ -183,31 +183,56 @@ RSpec.describe "README.md" do
         expect(extract_value(**my_class.new)).to eq([1, base: 2])
       end
     end
+    # README.md:288
+    context "Constraints" do
+      # README.md:293
+      let :switch do
+      DataClass(on: false).with_constraint(on: -> { [false, true].member? _1 })
+      end
+      it "boolean values are acceptable (README.md:300)" do
+        expect{ switch.new }.not_to raise_error
+        expect(switch.new.merge(on: true).on).to eq(true)
+      end
+      it "we can neither construct or merge with non boolean values (README.md:306)" do
+        expect{ switch.new(on: nil) }
+        .to raise_error(Lab42::DataClass::ConstraintError, "value nil is not allowed for attribute :on")
+        expect{ switch.new.merge(on: 42) }
+        .to raise_error(Lab42::DataClass::ConstraintError, "value 42 is not allowed for attribute :on")
+      end
+      it "therefore defaultless attributes cannot have a constraint that is violated by a nil value (README.md:314)" do
+        error_head = "constraint error during validation of default value of attribute :value"
+        error_body = "  undefined method `>' for nil:NilClass"
+        error_message = [error_head, error_body].join("\n")
+
+        expect{ DataClass(value: nil).with_constraint(value: -> { _1 > 0 }) }
+        .to raise_error(Lab42::DataClass::ConstraintError, /#{error_message}/)
+      end
+    end
   end
-  # README.md:288
+  # README.md:324
   context "`Pair` and `Triple`" do
-    # README.md:298
+    # README.md:334
     context "Constructor functions" do
-      # README.md:301
+      # README.md:337
       let(:token) { Pair("12", 12) }
       let(:node)  { Triple("42", 4, 2) }
-      it "we can access their elements (README.md:307)" do
+      it "we can access their elements (README.md:343)" do
         expect(token.first).to eq("12")
         expect(token.second).to eq(12)
         expect(node.first).to eq("42")
         expect(node.second).to eq(4)
         expect(node.third).to eq(2)
       end
-      it "we can treat them like _Indexable_ (README.md:316)" do
+      it "we can treat them like _Indexable_ (README.md:352)" do
         expect(token[1]).to eq(12)
         expect(token[-2]).to eq("12")
         expect(node[2]).to eq(2)
       end
-      it "convert them to arrays of course (README.md:323)" do
+      it "convert them to arrays of course (README.md:359)" do
         expect(token.to_a).to eq(["12", 12])
         expect(node.to_a).to eq(["42", 4, 2])
       end
-      it "they behave like arrays in pattern matching too (README.md:329)" do
+      it "they behave like arrays in pattern matching too (README.md:365)" do
         token => [str, int]
         node  => [root, lft, rgt]
         expect(str).to eq("12")
@@ -216,7 +241,7 @@ RSpec.describe "README.md" do
         expect(lft).to eq(4)
         expect(rgt).to eq(2)
       end
-      it "of course the factory functions are equivalent to the constructors (README.md:340)" do
+      it "of course the factory functions are equivalent to the constructors (README.md:376)" do
         expect(token).to eq(Lab42::Pair.new("12", 12))
         expect(node).to eq(Lab42::Triple.new("42", 4, 2))
       end

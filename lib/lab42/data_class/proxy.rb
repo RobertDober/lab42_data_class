@@ -5,21 +5,38 @@ require_relative 'proxy/mixin'
 module Lab42
   module DataClass
     class Proxy
-      attr_reader :actual_params, :block, :defaults, :klass, :members, :positionals
+      attr_reader :actual_params, :all_params, :block, :constraints, :defaults, :klass, :members, :positionals
 
       def check!(**params)
         @actual_params = params
+        @all_params = defaults.merge(params)
         raise ArgumentError, "missing initializers for #{_missing_initializers}" unless _missing_initializers.empty?
         raise ArgumentError, "illegal initializers #{_illegal_initializers}" unless _illegal_initializers.empty?
+
+        _check_constraints!(all_params)
+      end
+
+      def check_constraints_against_defaults(constraints)
+        errors = constraints
+                 .map(&_check_constraint_against_default)
+                 .compact
+        raise ConstraintError, errors.join("\n\n") unless errors.empty?
       end
 
       def define_class!
         klass.module_eval(&_define_attr_reader)
         klass.module_eval(&_define_initializer)
+        class << klass; self end.module_eval(&_define_with_constraint)
         _define_methods
         klass.include(Mixin)
         klass.module_eval(&block) if block
         klass
+      end
+
+      def define_constraint
+        ->((attr, constraint)) do
+          constraints[attr] << constraint
+        end
       end
 
       def init(data_class, **params)
@@ -36,11 +53,52 @@ module Lab42
       def initialize(*args, **kwds, &blk)
         @klass = Class.new
 
+        @constraints = Hash.new { |h, k| h[k] = [] }
+
         @block = blk
         @defaults = kwds
         @members = Set.new(args + kwds.keys)
-        # TODO: Check for all symbols and no duplicates ⇒ v0.1.1
+        # TODO: Check for all symbols and no duplicates ⇒ v0.5.1
         @positionals = args
+      end
+
+      def _check_constraint_against_default
+        ->((attr, constraint)) do
+          if defaults.key?(attr)
+            _check_constraint_against_default_value(attr, defaults[attr], constraint)
+          end
+        end
+      end
+
+      def _check_constraint_against_default_value(attr, value, constraint)
+        unless constraint.(value)
+          "default value #{value.inspect} is not allowed for attribute #{attr.inspect}"
+        end
+      rescue StandardError => e
+        "constraint error during validation of default value of attribute #{attr.inspect}\n  #{e.message}"
+      end
+
+      def _check_constraints_for_attr!
+        ->((k, v)) do
+          constraints[k]
+            .map(&_check_constraint!(k, v))
+        end
+      end
+
+      def _check_constraint!(attr, value)
+        ->(constraint) do
+          "value #{value.inspect} is not allowed for attribute #{attr.inspect}" unless constraint.(value)
+        rescue RuntimeError => e
+          "constraint error during validation of attribute #{attr.inspect}\n  #{e.message}"
+        end
+      end
+
+      def _check_constraints!(params)
+        errors = params
+                 .flat_map(&_check_constraints_for_attr!)
+                 .compact
+
+        raise ConstraintError, errors.join("\n\n") unless errors.empty?
       end
 
       def _define_attr_reader
@@ -78,8 +136,8 @@ module Lab42
       end
 
       def _define_methods
-        (class << klass; self end).module_eval(&_define_freezing_constructor)
-        (class << klass; self end).module_eval(&_define_to_proc)
+        class << klass; self end.module_eval(&_define_freezing_constructor)
+        class << klass; self end.module_eval(&_define_to_proc)
         klass.module_eval(&_define_to_h)
         klass.module_eval(&_define_merge)
       end
@@ -98,6 +156,17 @@ module Lab42
         ->(*) do
           define_method :to_proc do
             ->(other) { self === other }
+          end
+        end
+      end
+
+      def _define_with_constraint
+        proxy = self
+        ->(*) do
+          define_method :with_constraint do |**constraints|
+            constraints.each(&proxy.define_constraint)
+            proxy.check_constraints_against_defaults(constraints)
+            self
           end
         end
       end
