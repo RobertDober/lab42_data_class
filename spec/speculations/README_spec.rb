@@ -211,32 +211,80 @@ RSpec.describe "README.md" do
         expect { DataClass(a: 1).with_constraint(b: -> {true}) }
         .to raise_error(ArgumentError, "constraints cannot be defined for undefined attributes [:b]")
       end
+      # README.md:330
+      context "Convenience Constraints" do
+        # README.md:336
+        let(:constraint_error) { Lab42::DataClass::ConstraintError }
+        let(:positive) { DataClass(:value) }
+        it "a first implementation of `Positive` (README.md:346)" do
+          positive_by_symbol = positive.with_constraint(value: :positive?)
+
+          expect(positive_by_symbol.new(value: 1).value).to eq(1)
+          expect{positive_by_symbol.new(value: 0)}.to raise_error(constraint_error)
+        end
+        it "we can implement a different form of `Positive` (README.md:357)" do
+          positive_by_ary = positive.with_constraint(value: [:>, 0])
+
+          expect(positive_by_ary.new(value: 1).value).to eq(1)
+          expect{positive_by_ary.new(value: 0)}.to raise_error(constraint_error)
+        end
+        it "this works with a `Set` (README.md:369)" do
+          positive_by_set = positive.with_constraint(value: Set.new([*1..10]))
+
+          expect(positive_by_set.new(value: 1).value).to eq(1)
+          expect{positive_by_set.new(value: 0)}.to raise_error(constraint_error)
+        end
+        it "also with a `Range` (README.md:377)" do
+          positive_by_range = positive.with_constraint(value: 1..Float::INFINITY)
+
+          expect(positive_by_range.new(value: 1).value).to eq(1)
+          expect{positive_by_range.new(value: 0)}.to raise_error(constraint_error)
+        end
+        it "we can also have a regex based constraint (README.md:389)" do
+          vowel = DataClass(:word).with_constraint(word: /[aeiou]/)
+
+          expect(vowel.new(word: "alpha").word).to eq("alpha")
+          expect{vowel.new(word: "krk")}.to raise_error(constraint_error)
+        end
+        it "we can also use instance methods to implement our `Positive` (README.md:400)" do
+          positive_by_instance_method = positive.with_constraint(value: Fixnum.instance_method(:positive?))
+
+          expect(positive_by_instance_method.new(value: 1).value).to eq(1)
+          expect{positive_by_instance_method.new(value: 0)}.to raise_error(constraint_error)
+        end
+        it "we can use methods to implement it (README.md:408)" do
+          positive_by_method = positive.with_constraint(value: 0.method(:<))
+
+          expect(positive_by_method.new(value: 1).value).to eq(1)
+          expect{positive_by_method.new(value: 0)}.to raise_error(constraint_error)
+        end
+      end
     end
   end
-  # README.md:330
+  # README.md:415
   context "`Pair` and `Triple`" do
-    # README.md:340
+    # README.md:425
     context "Constructor functions" do
-      # README.md:343
+      # README.md:428
       let(:token) { Pair("12", 12) }
       let(:node)  { Triple("42", 4, 2) }
-      it "we can access their elements (README.md:349)" do
+      it "we can access their elements (README.md:434)" do
         expect(token.first).to eq("12")
         expect(token.second).to eq(12)
         expect(node.first).to eq("42")
         expect(node.second).to eq(4)
         expect(node.third).to eq(2)
       end
-      it "we can treat them like _Indexable_ (README.md:358)" do
+      it "we can treat them like _Indexable_ (README.md:443)" do
         expect(token[1]).to eq(12)
         expect(token[-2]).to eq("12")
         expect(node[2]).to eq(2)
       end
-      it "convert them to arrays of course (README.md:365)" do
+      it "convert them to arrays of course (README.md:450)" do
         expect(token.to_a).to eq(["12", 12])
         expect(node.to_a).to eq(["42", 4, 2])
       end
-      it "they behave like arrays in pattern matching too (README.md:371)" do
+      it "they behave like arrays in pattern matching too (README.md:456)" do
         token => [str, int]
         node  => [root, lft, rgt]
         expect(str).to eq("12")
@@ -245,7 +293,7 @@ RSpec.describe "README.md" do
         expect(lft).to eq(4)
         expect(rgt).to eq(2)
       end
-      it "of course the factory functions are equivalent to the constructors (README.md:382)" do
+      it "of course the factory functions are equivalent to the constructors (README.md:467)" do
         expect(token).to eq(Lab42::Pair.new("12", 12))
         expect(node).to eq(Lab42::Triple.new("42", 4, 2))
       end

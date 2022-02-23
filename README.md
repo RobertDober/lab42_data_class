@@ -327,6 +327,91 @@ And defining constraints for undefined attributes is not the best of ideas
 ```
 
 
+#### Context: Convenience Constraints
+
+Often repeating patterns are implemented as non lambda constraints, depending on the type of a constraint
+it is implicitly converted to a lambda as specified below:
+
+Given a shortcut for our `ConstraintError`
+```ruby
+    let(:constraint_error) { Lab42::DataClass::ConstraintError }
+    let(:positive) { DataClass(:value) }
+```
+
+##### Symbols
+
+... are sent to the value of the attribute, this is not very surprising of course ;)
+
+Then a first implementation of `Positive`
+```ruby
+    positive_by_symbol = positive.with_constraint(value: :positive?)
+
+    expect(positive_by_symbol.new(value: 1).value).to eq(1)
+    expect{positive_by_symbol.new(value: 0)}.to raise_error(constraint_error)
+```
+
+##### Arrays
+
+... are also sent to the value of the attribute, this time we can provide paramaters
+And we can implement a different form of `Positive`
+```ruby
+    positive_by_ary = positive.with_constraint(value: [:>, 0])
+
+    expect(positive_by_ary.new(value: 1).value).to eq(1)
+    expect{positive_by_ary.new(value: 0)}.to raise_error(constraint_error)
+```
+
+If however we are interested in membership we have to wrap the `Array` into a `Set`
+
+##### Membership
+
+And this works with a `Set`
+```ruby
+    positive_by_set = positive.with_constraint(value: Set.new([*1..10]))
+
+    expect(positive_by_set.new(value: 1).value).to eq(1)
+    expect{positive_by_set.new(value: 0)}.to raise_error(constraint_error)
+```
+
+And also with a `Range`
+```ruby
+    positive_by_range = positive.with_constraint(value: 1..Float::INFINITY)
+
+    expect(positive_by_range.new(value: 1).value).to eq(1)
+    expect{positive_by_range.new(value: 0)}.to raise_error(constraint_error)
+```
+
+##### Regexen
+
+This seems quite obvious, and of course it works
+
+Then we can also have a regex based constraint
+```ruby
+    vowel = DataClass(:word).with_constraint(word: /[aeiou]/)
+
+    expect(vowel.new(word: "alpha").word).to eq("alpha")
+    expect{vowel.new(word: "krk")}.to raise_error(constraint_error)
+```
+
+##### Other callable objects as constraints
+
+
+Then we can also use instance methods to implement our `Positive`
+```ruby
+    positive_by_instance_method = positive.with_constraint(value: Fixnum.instance_method(:positive?))
+
+    expect(positive_by_instance_method.new(value: 1).value).to eq(1)
+    expect{positive_by_instance_method.new(value: 0)}.to raise_error(constraint_error)
+```
+
+Or we can use methods to implement it
+```ruby
+    positive_by_method = positive.with_constraint(value: 0.method(:<))
+
+    expect(positive_by_method.new(value: 1).value).to eq(1)
+    expect{positive_by_method.new(value: 0)}.to raise_error(constraint_error)
+```
+
 ## Context: `Pair` and `Triple`
 
 Two special cases of a `DataClass` which behave like `Tuple` of size 2 and 3 in _Elixir_

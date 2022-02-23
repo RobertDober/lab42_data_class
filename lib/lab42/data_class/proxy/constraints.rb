@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "constraints/maker"
 module Lab42
   module DataClass
     class Proxy
@@ -14,7 +15,7 @@ module Lab42
         def define_constraint
           ->((attr, constraint)) do
             if members.member?(attr)
-              constraints[attr] << constraint
+              constraints[attr] << Maker.make_constraint(constraint)
               nil
             else
               attr
