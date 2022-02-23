@@ -14,6 +14,6 @@ group :development, :test do
   gem "rubocop", "~> 1.25.0"
   gem 'simplecov'
   gem 'simplecov-lcov', '~> 0.8.0'
-  gem "speculate_about", "~> 0.6.0" # path: "../../ruby/speculate_about"
+  gem "speculate_about", "~> 1.0.2" # path: "../../ruby/speculate_about"
 end
 #  SPDX-License-Identifier: Apache-2.0
