@@ -62,6 +62,10 @@ Style/DoubleNegation:
 Style/EmptyMethod:
   Enabled: false
 
+Style/FrozenStringLiteralComment:
+  Include:
+    - "lib/**/*.rb"
+
 Style/GuardClause:
   Enabled: false
 
@@ -74,9 +78,8 @@ Style/Lambda:
 Style/LambdaCall:
   Enabled: false
 
-Style/FrozenStringLiteralComment:
-  Include:
-    - "lib/**/*.rb"
+Style/MixinGrouping:
+  Enabled: false
 
 Style/StringLiterals:
   Enabled: false

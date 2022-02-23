@@ -2,11 +2,13 @@
 
 require 'set'
 require_relative 'proxy/constraints'
+require_relative 'proxy/validations'
 require_relative 'proxy/mixin'
 module Lab42
   module DataClass
     class Proxy
-      include Constraints
+      include Constraints, Validations
+
       attr_reader :actual_params, :all_params, :block, :constraints, :defaults, :klass, :members, :positionals
 
       def check!(**params)
@@ -35,6 +37,10 @@ module Lab42
         members
           .map { [_1, data_class_instance.instance_variable_get("@#{_1}")] }
           .to_h
+      end
+
+      def validations
+        @__validations__ ||= []
       end
 
       private
@@ -71,6 +77,7 @@ module Lab42
           define_method :initialize do |**params|
             proxy.check!(**params)
             proxy.init(self, **params)
+            proxy.validate!(self)
           end
         end
       end
@@ -85,11 +92,17 @@ module Lab42
       end
 
       def _define_methods
-        class << klass; self end.module_eval(&_define_freezing_constructor)
-        class << klass; self end.module_eval(&_define_to_proc)
-        class << klass; self end.module_eval(&_define_with_constraint)
+        class << klass; self end
+          .tap { |singleton| _define_singleton_methods(singleton) }
         klass.module_eval(&_define_to_h)
         klass.module_eval(&_define_merge)
+      end
+
+      def _define_singleton_methods(singleton)
+        singleton.module_eval(&_define_freezing_constructor)
+        singleton.module_eval(&_define_to_proc)
+        singleton.module_eval(&_define_with_constraint)
+        singleton.module_eval(&_define_with_validations)
       end
 
       def _define_to_h

@@ -259,32 +259,59 @@ RSpec.describe "README.md" do
           expect{positive_by_method.new(value: 0)}.to raise_error(constraint_error)
         end
       end
+      # README.md:415
+      context "Global Constraints aka __Validations__" do
+        # README.md:421
+        let(:point) { DataClass(:x, :y).validate{ |point| point.x > point.y } }
+        let(:validation_error) { Lab42::DataClass::ValidationError }
+        it "we will get a `ValidationError` if we construct a point left of the main diagonal (README.md:427)" do
+          expect{ point.new(x: 0, y: 1) }
+          .to raise_error(validation_error)
+        end
+        it "as validation might need more than the default values we will not execute them at compile time (README.md:433)" do
+          expect{ DataClass(x: 0, y: 0).validate{ |inst| inst.x > inst.y } }
+          .to_not raise_error
+        end
+        it "we can name validations to get better error messages (README.md:439)" do
+          better_point = DataClass(:x, :y).validate(:too_left){ |point| point.x > point.y }
+          ok_point     = better_point.new(x: 1, y: 0)
+          expect{ ok_point.merge(y: 1) }
+          .to raise_error(validation_error, "too_left")
+        end
+        it "remark how bad unnamed validation errors might be (README.md:447)" do
+          error_message_rgx = %r{
+          \#<Proc:0x[0-9a-f]+ \s .* spec/speculations/README_spec\.rb: \d+ > \z
+          }x
+          expect{ point.new(x: 0, y: 1) }
+          .to raise_error(validation_error, error_message_rgx)
+        end
+      end
     end
   end
-  # README.md:415
+  # README.md:455
   context "`Pair` and `Triple`" do
-    # README.md:425
+    # README.md:465
     context "Constructor functions" do
-      # README.md:428
+      # README.md:468
       let(:token) { Pair("12", 12) }
       let(:node)  { Triple("42", 4, 2) }
-      it "we can access their elements (README.md:434)" do
+      it "we can access their elements (README.md:474)" do
         expect(token.first).to eq("12")
         expect(token.second).to eq(12)
         expect(node.first).to eq("42")
         expect(node.second).to eq(4)
         expect(node.third).to eq(2)
       end
-      it "we can treat them like _Indexable_ (README.md:443)" do
+      it "we can treat them like _Indexable_ (README.md:483)" do
         expect(token[1]).to eq(12)
         expect(token[-2]).to eq("12")
         expect(node[2]).to eq(2)
       end
-      it "convert them to arrays of course (README.md:450)" do
+      it "convert them to arrays of course (README.md:490)" do
         expect(token.to_a).to eq(["12", 12])
         expect(node.to_a).to eq(["42", 4, 2])
       end
-      it "they behave like arrays in pattern matching too (README.md:456)" do
+      it "they behave like arrays in pattern matching too (README.md:496)" do
         token => [str, int]
         node  => [root, lft, rgt]
         expect(str).to eq("12")
@@ -293,7 +320,7 @@ RSpec.describe "README.md" do
         expect(lft).to eq(4)
         expect(rgt).to eq(2)
       end
-      it "of course the factory functions are equivalent to the constructors (README.md:467)" do
+      it "of course the factory functions are equivalent to the constructors (README.md:507)" do
         expect(token).to eq(Lab42::Pair.new("12", 12))
         expect(node).to eq(Lab42::Triple.new("42", 4, 2))
       end

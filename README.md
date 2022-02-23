@@ -412,6 +412,46 @@ Or we can use methods to implement it
     expect{positive_by_method.new(value: 0)}.to raise_error(constraint_error)
 ```
 
+#### Context: Global Constraints aka __Validations__
+
+So far we have only speculated about constraints concerning one attribute, however sometimes we want
+to have arbitrary constraints which can only be calculated by access to more attributes
+
+Given a `Point` DataClass
+```ruby
+    let(:point) { DataClass(:x, :y).validate{ |point| point.x > point.y } }
+    let(:validation_error) { Lab42::DataClass::ValidationError }
+```
+
+Then we will get a `ValidationError` if we construct a point left of the main diagonal
+```ruby
+    expect{ point.new(x: 0, y: 1) }
+      .to raise_error(validation_error)
+```
+
+But as validation might need more than the default values we will not execute them at compile time
+```ruby
+    expect{ DataClass(x: 0, y: 0).validate{ |inst| inst.x > inst.y } }
+      .to_not raise_error
+```
+
+And we can name validations to get better error messages
+```ruby
+    better_point = DataClass(:x, :y).validate(:too_left){ |point| point.x > point.y }
+    ok_point     = better_point.new(x: 1, y: 0)
+    expect{ ok_point.merge(y: 1) }
+      .to raise_error(validation_error, "too_left")
+```
+
+And remark how bad unnamed validation errors might be
+```ruby
+    error_message_rgx = %r{
+       \#<Proc:0x[0-9a-f]+ \s .* spec/speculations/README_spec\.rb: \d+ > \z
+    }x
+    expect{ point.new(x: 0, y: 1) }
+      .to raise_error(validation_error, error_message_rgx)
+```
+
 ## Context: `Pair` and `Triple`
 
 Two special cases of a `DataClass` which behave like `Tuple` of size 2 and 3 in _Elixir_

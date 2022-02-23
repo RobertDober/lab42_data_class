@@ -20,13 +20,13 @@ module Lab42
             when UnboundMethod
               -> { constraint.bind(_1).() }
             else
-              _make_memeber_constraint(constraint)
+              _make_member_constraint(constraint)
             end
           end
 
           private
 
-          def _make_memeber_constraint(constraint)
+          def _make_member_constraint(constraint)
             if constraint.respond_to?(:member?)
               -> { constraint.member?(_1) }
             end
