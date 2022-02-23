@@ -320,6 +320,12 @@ And therefore defaultless attributes cannot have a constraint that is violated b
       .to raise_error(Lab42::DataClass::ConstraintError, /#{error_message}/)
 ```
 
+And defining constraints for undefined attributes is not the best of ideas
+```ruby
+    expect { DataClass(a: 1).with_constraint(b: -> {true}) }
+      .to raise_error(ArgumentError, "constraints cannot be defined for undefined attributes [:b]")
+```
+
 
 ## Context: `Pair` and `Triple`
 

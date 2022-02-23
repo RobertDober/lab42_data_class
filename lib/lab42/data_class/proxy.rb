@@ -27,12 +27,6 @@ module Lab42
         klass
       end
 
-      def define_constraint
-        ->((attr, constraint)) do
-          constraints[attr] << constraint
-        end
-      end
-
       def init(data_class, **params)
         _init(data_class, defaults.merge(params))
       end
@@ -112,17 +106,6 @@ module Lab42
         ->(*) do
           define_method :to_proc do
             ->(other) { self === other }
-          end
-        end
-      end
-
-      def _define_with_constraint
-        proxy = self
-        ->(*) do
-          define_method :with_constraint do |**constraints|
-            constraints.each(&proxy.define_constraint)
-            proxy.check_constraints_against_defaults(constraints)
-            self
           end
         end
       end

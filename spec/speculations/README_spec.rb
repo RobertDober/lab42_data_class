@@ -207,32 +207,36 @@ RSpec.describe "README.md" do
         expect{ DataClass(value: nil).with_constraint(value: -> { _1 > 0 }) }
         .to raise_error(Lab42::DataClass::ConstraintError, /#{error_message}/)
       end
+      it "defining constraints for undefined attributes is not the best of ideas (README.md:324)" do
+        expect { DataClass(a: 1).with_constraint(b: -> {true}) }
+        .to raise_error(ArgumentError, "constraints cannot be defined for undefined attributes [:b]")
+      end
     end
   end
-  # README.md:324
+  # README.md:330
   context "`Pair` and `Triple`" do
-    # README.md:334
+    # README.md:340
     context "Constructor functions" do
-      # README.md:337
+      # README.md:343
       let(:token) { Pair("12", 12) }
       let(:node)  { Triple("42", 4, 2) }
-      it "we can access their elements (README.md:343)" do
+      it "we can access their elements (README.md:349)" do
         expect(token.first).to eq("12")
         expect(token.second).to eq(12)
         expect(node.first).to eq("42")
         expect(node.second).to eq(4)
         expect(node.third).to eq(2)
       end
-      it "we can treat them like _Indexable_ (README.md:352)" do
+      it "we can treat them like _Indexable_ (README.md:358)" do
         expect(token[1]).to eq(12)
         expect(token[-2]).to eq("12")
         expect(node[2]).to eq(2)
       end
-      it "convert them to arrays of course (README.md:359)" do
+      it "convert them to arrays of course (README.md:365)" do
         expect(token.to_a).to eq(["12", 12])
         expect(node.to_a).to eq(["42", 4, 2])
       end
-      it "they behave like arrays in pattern matching too (README.md:365)" do
+      it "they behave like arrays in pattern matching too (README.md:371)" do
         token => [str, int]
         node  => [root, lft, rgt]
         expect(str).to eq("12")
@@ -241,7 +245,7 @@ RSpec.describe "README.md" do
         expect(lft).to eq(4)
         expect(rgt).to eq(2)
       end
-      it "of course the factory functions are equivalent to the constructors (README.md:376)" do
+      it "of course the factory functions are equivalent to the constructors (README.md:382)" do
         expect(token).to eq(Lab42::Pair.new("12", 12))
         expect(node).to eq(Lab42::Triple.new("42", 4, 2))
       end

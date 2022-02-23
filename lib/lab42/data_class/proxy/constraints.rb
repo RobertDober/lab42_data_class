@@ -11,6 +11,17 @@ module Lab42
           raise ConstraintError, errors.join("\n\n") unless errors.empty?
         end
 
+        def define_constraint
+          ->((attr, constraint)) do
+            if members.member?(attr)
+              constraints[attr] << constraint
+              nil
+            else
+              attr
+            end
+          end
+        end
+
         private
 
         def _check_constraint_against_default
@@ -50,6 +61,22 @@ module Lab42
                    .compact
 
           raise ConstraintError, errors.join("\n\n") unless errors.empty?
+        end
+
+        def _define_with_constraint
+          proxy = self
+          ->(*) do
+            define_method :with_constraint do |**constraints|
+              errors = constraints.map(&proxy.define_constraint).compact
+              unless errors.empty?
+                raise ArgumentError,
+                      "constraints cannot be defined for undefined attributes #{errors.inspect}"
+              end
+
+              proxy.check_constraints_against_defaults(constraints)
+              self
+            end
+          end
         end
       end
     end
