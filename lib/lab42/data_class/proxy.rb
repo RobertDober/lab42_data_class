@@ -1,16 +1,23 @@
 # frozen_string_literal: true
 
 require 'set'
+require_relative 'proxy/constraints'
+require_relative 'proxy/validations'
 require_relative 'proxy/mixin'
 module Lab42
   module DataClass
     class Proxy
-      attr_reader :actual_params, :block, :defaults, :klass, :members, :positionals
+      include Constraints, Validations
+
+      attr_reader :actual_params, :all_params, :block, :constraints, :defaults, :klass, :members, :positionals
 
       def check!(**params)
         @actual_params = params
+        @all_params = defaults.merge(params)
         raise ArgumentError, "missing initializers for #{_missing_initializers}" unless _missing_initializers.empty?
         raise ArgumentError, "illegal initializers #{_illegal_initializers}" unless _illegal_initializers.empty?
+
+        _check_constraints!(all_params)
       end
 
       def define_class!
@@ -32,14 +39,20 @@ module Lab42
           .to_h
       end
 
+      def validations
+        @__validations__ ||= []
+      end
+
       private
       def initialize(*args, **kwds, &blk)
         @klass = Class.new
 
+        @constraints = Hash.new { |h, k| h[k] = [] }
+
         @block = blk
         @defaults = kwds
         @members = Set.new(args + kwds.keys)
-        # TODO: Check for all symbols and no duplicates ⇒ v0.1.1
+        # TODO: Check for all symbols and no duplicates ⇒ v0.5.1
         @positionals = args
       end
 
@@ -64,6 +77,7 @@ module Lab42
           define_method :initialize do |**params|
             proxy.check!(**params)
             proxy.init(self, **params)
+            proxy.validate!(self)
           end
         end
       end
@@ -78,10 +92,17 @@ module Lab42
       end
 
       def _define_methods
-        (class << klass; self end).module_eval(&_define_freezing_constructor)
-        (class << klass; self end).module_eval(&_define_to_proc)
+        class << klass; self end
+          .tap { |singleton| _define_singleton_methods(singleton) }
         klass.module_eval(&_define_to_h)
         klass.module_eval(&_define_merge)
+      end
+
+      def _define_singleton_methods(singleton)
+        singleton.module_eval(&_define_freezing_constructor)
+        singleton.module_eval(&_define_to_proc)
+        singleton.module_eval(&_define_with_constraint)
+        singleton.module_eval(&_define_with_validations)
       end
 
       def _define_to_h

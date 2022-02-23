@@ -31,8 +31,11 @@ Metrics/BlockLength:
   Exclude:
     - "spec/**/*.rb"
 
-# Metrics/MethodLength:
-#    Exclude:
+Metrics/ClassLength:
+  Max: 200
+
+Metrics/MethodLength:
+  Max: 16
 
 Naming/MemoizedInstanceVariableName:
   Enabled: false
@@ -59,15 +62,24 @@ Style/DoubleNegation:
 Style/EmptyMethod:
   Enabled: false
 
+Style/FrozenStringLiteralComment:
+  Include:
+    - "lib/**/*.rb"
+
+Style/GuardClause:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
 Style/Lambda:
   Enabled: false
 
 Style/LambdaCall:
   Enabled: false
 
-Style/FrozenStringLiteralComment:
-  Include:
-    - "lib/**/*.rb"
+Style/MixinGrouping:
+  Enabled: false
 
 Style/StringLiterals:
   Enabled: false

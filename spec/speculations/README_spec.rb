@@ -183,31 +183,135 @@ RSpec.describe "README.md" do
         expect(extract_value(**my_class.new)).to eq([1, base: 2])
       end
     end
+    # README.md:288
+    context "Constraints" do
+      # README.md:293
+      let :switch do
+      DataClass(on: false).with_constraint(on: -> { [false, true].member? _1 })
+      end
+      it "boolean values are acceptable (README.md:300)" do
+        expect{ switch.new }.not_to raise_error
+        expect(switch.new.merge(on: true).on).to eq(true)
+      end
+      it "we can neither construct or merge with non boolean values (README.md:306)" do
+        expect{ switch.new(on: nil) }
+        .to raise_error(Lab42::DataClass::ConstraintError, "value nil is not allowed for attribute :on")
+        expect{ switch.new.merge(on: 42) }
+        .to raise_error(Lab42::DataClass::ConstraintError, "value 42 is not allowed for attribute :on")
+      end
+      it "therefore defaultless attributes cannot have a constraint that is violated by a nil value (README.md:314)" do
+        error_head = "constraint error during validation of default value of attribute :value"
+        error_body = "  undefined method `>' for nil:NilClass"
+        error_message = [error_head, error_body].join("\n")
+
+        expect{ DataClass(value: nil).with_constraint(value: -> { _1 > 0 }) }
+        .to raise_error(Lab42::DataClass::ConstraintError, /#{error_message}/)
+      end
+      it "defining constraints for undefined attributes is not the best of ideas (README.md:324)" do
+        expect { DataClass(a: 1).with_constraint(b: -> {true}) }
+        .to raise_error(ArgumentError, "constraints cannot be defined for undefined attributes [:b]")
+      end
+      # README.md:330
+      context "Convenience Constraints" do
+        # README.md:336
+        let(:constraint_error) { Lab42::DataClass::ConstraintError }
+        let(:positive) { DataClass(:value) }
+        it "a first implementation of `Positive` (README.md:346)" do
+          positive_by_symbol = positive.with_constraint(value: :positive?)
+
+          expect(positive_by_symbol.new(value: 1).value).to eq(1)
+          expect{positive_by_symbol.new(value: 0)}.to raise_error(constraint_error)
+        end
+        it "we can implement a different form of `Positive` (README.md:357)" do
+          positive_by_ary = positive.with_constraint(value: [:>, 0])
+
+          expect(positive_by_ary.new(value: 1).value).to eq(1)
+          expect{positive_by_ary.new(value: 0)}.to raise_error(constraint_error)
+        end
+        it "this works with a `Set` (README.md:369)" do
+          positive_by_set = positive.with_constraint(value: Set.new([*1..10]))
+
+          expect(positive_by_set.new(value: 1).value).to eq(1)
+          expect{positive_by_set.new(value: 0)}.to raise_error(constraint_error)
+        end
+        it "also with a `Range` (README.md:377)" do
+          positive_by_range = positive.with_constraint(value: 1..Float::INFINITY)
+
+          expect(positive_by_range.new(value: 1).value).to eq(1)
+          expect{positive_by_range.new(value: 0)}.to raise_error(constraint_error)
+        end
+        it "we can also have a regex based constraint (README.md:389)" do
+          vowel = DataClass(:word).with_constraint(word: /[aeiou]/)
+
+          expect(vowel.new(word: "alpha").word).to eq("alpha")
+          expect{vowel.new(word: "krk")}.to raise_error(constraint_error)
+        end
+        it "we can also use instance methods to implement our `Positive` (README.md:400)" do
+          positive_by_instance_method = positive.with_constraint(value: Fixnum.instance_method(:positive?))
+
+          expect(positive_by_instance_method.new(value: 1).value).to eq(1)
+          expect{positive_by_instance_method.new(value: 0)}.to raise_error(constraint_error)
+        end
+        it "we can use methods to implement it (README.md:408)" do
+          positive_by_method = positive.with_constraint(value: 0.method(:<))
+
+          expect(positive_by_method.new(value: 1).value).to eq(1)
+          expect{positive_by_method.new(value: 0)}.to raise_error(constraint_error)
+        end
+      end
+      # README.md:415
+      context "Global Constraints aka __Validations__" do
+        # README.md:421
+        let(:point) { DataClass(:x, :y).validate{ |point| point.x > point.y } }
+        let(:validation_error) { Lab42::DataClass::ValidationError }
+        it "we will get a `ValidationError` if we construct a point left of the main diagonal (README.md:427)" do
+          expect{ point.new(x: 0, y: 1) }
+          .to raise_error(validation_error)
+        end
+        it "as validation might need more than the default values we will not execute them at compile time (README.md:433)" do
+          expect{ DataClass(x: 0, y: 0).validate{ |inst| inst.x > inst.y } }
+          .to_not raise_error
+        end
+        it "we can name validations to get better error messages (README.md:439)" do
+          better_point = DataClass(:x, :y).validate(:too_left){ |point| point.x > point.y }
+          ok_point     = better_point.new(x: 1, y: 0)
+          expect{ ok_point.merge(y: 1) }
+          .to raise_error(validation_error, "too_left")
+        end
+        it "remark how bad unnamed validation errors might be (README.md:447)" do
+          error_message_rgx = %r{
+          \#<Proc:0x[0-9a-f]+ \s .* spec/speculations/README_spec\.rb: \d+ > \z
+          }x
+          expect{ point.new(x: 0, y: 1) }
+          .to raise_error(validation_error, error_message_rgx)
+        end
+      end
+    end
   end
-  # README.md:288
+  # README.md:455
   context "`Pair` and `Triple`" do
-    # README.md:298
+    # README.md:465
     context "Constructor functions" do
-      # README.md:301
+      # README.md:468
       let(:token) { Pair("12", 12) }
       let(:node)  { Triple("42", 4, 2) }
-      it "we can access their elements (README.md:307)" do
+      it "we can access their elements (README.md:474)" do
         expect(token.first).to eq("12")
         expect(token.second).to eq(12)
         expect(node.first).to eq("42")
         expect(node.second).to eq(4)
         expect(node.third).to eq(2)
       end
-      it "we can treat them like _Indexable_ (README.md:316)" do
+      it "we can treat them like _Indexable_ (README.md:483)" do
         expect(token[1]).to eq(12)
         expect(token[-2]).to eq("12")
         expect(node[2]).to eq(2)
       end
-      it "convert them to arrays of course (README.md:323)" do
+      it "convert them to arrays of course (README.md:490)" do
         expect(token.to_a).to eq(["12", 12])
         expect(node.to_a).to eq(["42", 4, 2])
       end
-      it "they behave like arrays in pattern matching too (README.md:329)" do
+      it "they behave like arrays in pattern matching too (README.md:496)" do
         token => [str, int]
         node  => [root, lft, rgt]
         expect(str).to eq("12")
@@ -216,7 +320,7 @@ RSpec.describe "README.md" do
         expect(lft).to eq(4)
         expect(rgt).to eq(2)
       end
-      it "of course the factory functions are equivalent to the constructors (README.md:340)" do
+      it "of course the factory functions are equivalent to the constructors (README.md:507)" do
         expect(token).to eq(Lab42::Pair.new("12", 12))
         expect(node).to eq(Lab42::Triple.new("42", 4, 2))
       end
