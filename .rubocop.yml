@@ -34,8 +34,8 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Max: 200
 
-# Metrics/MethodLength:
-#    Exclude:
+Metrics/MethodLength:
+  Max: 16
 
 Naming/MemoizedInstanceVariableName:
   Enabled: false

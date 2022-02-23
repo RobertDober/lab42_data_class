@@ -50,7 +50,7 @@ module Lab42
         def _check_constraint!(attr, value)
           ->(constraint) do
             "value #{value.inspect} is not allowed for attribute #{attr.inspect}" unless constraint.(value)
-          rescue RuntimeError => e
+          rescue StandardError => e
             "constraint error during validation of attribute #{attr.inspect}\n  #{e.message}"
           end
         end
