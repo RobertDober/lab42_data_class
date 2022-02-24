@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lab42_data_class (0.5.0)
+    lab42_data_class (0.5.1)
 
 GEM
   remote: https://rubygems.org/

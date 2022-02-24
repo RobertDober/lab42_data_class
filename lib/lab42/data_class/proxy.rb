@@ -2,22 +2,22 @@
 
 require 'set'
 require_relative 'proxy/constraints'
+require_relative 'proxy/memos'
 require_relative 'proxy/validations'
 require_relative 'proxy/mixin'
 module Lab42
   module DataClass
     class Proxy
-      include Constraints, Validations
+      include Constraints, Memos, Validations
 
-      attr_reader :actual_params, :all_params, :block, :constraints, :defaults, :klass, :members, :positionals
+      attr_reader :actual_params, :block, :klass
 
       def check!(**params)
         @actual_params = params
-        @all_params = defaults.merge(params)
         raise ArgumentError, "missing initializers for #{_missing_initializers}" unless _missing_initializers.empty?
         raise ArgumentError, "illegal initializers #{_illegal_initializers}" unless _illegal_initializers.empty?
 
-        _check_constraints!(all_params)
+        _check_constraints!(defaults.merge(params))
       end
 
       def define_class!
@@ -39,21 +39,17 @@ module Lab42
           .to_h
       end
 
-      def validations
-        @__validations__ ||= []
-      end
-
       private
       def initialize(*args, **kwds, &blk)
-        @klass = Class.new
-
-        @constraints = Hash.new { |h, k| h[k] = [] }
+        @klass = if Class === args.first
+                   args.shift
+                 else
+                   Class.new
+                 end
 
         @block = blk
-        @defaults = kwds
-        @members = Set.new(args + kwds.keys)
-        # TODO: Check for all symbols and no duplicates ⇒ v0.5.1
-        @positionals = args
+        defaults.update(kwds)
+        positionals.push(*args)
       end
 
       def _define_attr_reader
@@ -127,16 +123,6 @@ module Lab42
         params.each do |key, value|
           data_class_instance.instance_variable_set("@#{key}", value)
         end
-      end
-
-      def _missing_initializers
-        @___missing_initializers__ ||=
-          positionals - actual_params.keys
-      end
-
-      def _illegal_initializers
-        @___illegal_initializers__ ||=
-          actual_params.keys - positionals - defaults.keys
       end
     end
   end
