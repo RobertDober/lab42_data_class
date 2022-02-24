@@ -295,47 +295,52 @@ RSpec.describe "README.md" do
       extend Lab42::DataClass
       attributes :age, member: false
       constraint :member, Set.new([false, true])
+      validate(:too_young_for_member) { |instance| !(instance.member && instance.age < 18) }
       end
       end
       let(:constraint_error) { Lab42::DataClass::ConstraintError }
+      let(:validation_error) { Lab42::DataClass::ValidationError }
       let(:my_instance) { my_class.new(age: 42) }
-      it "we can observe that instances of such a class (README.md:475)" do
-        my_vip = my_instance.merge(member: true)
-
+      let(:my_vip)      { my_instance.merge(member: true) }
+      it "we can observe that instances of such a class (README.md:478)" do
         expect(my_instance.to_h).to eq(age: 42, member: false)
         expect(my_vip.to_h).to eq(age: 42, member: true)
         expect(my_instance.member).to be_falsy
       end
-      it "we will get constraint errors if applicable (README.md:484)" do
+      it "we will get constraint errors if applicable (README.md:485)" do
         expect{my_instance.merge(member: nil)}
         .to raise_error(constraint_error)
       end
+      it "of course validations still work too (README.md:491)" do
+        expect{ my_vip.merge(age: 17) }
+        .to raise_error(validation_error, "too_young_for_member")
+      end
     end
   end
-  # README.md:490
+  # README.md:497
   context "`Pair` and `Triple`" do
-    # README.md:500
+    # README.md:507
     context "Constructor functions" do
-      # README.md:503
+      # README.md:510
       let(:token) { Pair("12", 12) }
       let(:node)  { Triple("42", 4, 2) }
-      it "we can access their elements (README.md:509)" do
+      it "we can access their elements (README.md:516)" do
         expect(token.first).to eq("12")
         expect(token.second).to eq(12)
         expect(node.first).to eq("42")
         expect(node.second).to eq(4)
         expect(node.third).to eq(2)
       end
-      it "we can treat them like _Indexable_ (README.md:518)" do
+      it "we can treat them like _Indexable_ (README.md:525)" do
         expect(token[1]).to eq(12)
         expect(token[-2]).to eq("12")
         expect(node[2]).to eq(2)
       end
-      it "convert them to arrays of course (README.md:525)" do
+      it "convert them to arrays of course (README.md:532)" do
         expect(token.to_a).to eq(["12", 12])
         expect(node.to_a).to eq(["42", 4, 2])
       end
-      it "they behave like arrays in pattern matching too (README.md:531)" do
+      it "they behave like arrays in pattern matching too (README.md:538)" do
         token => [str, int]
         node  => [root, lft, rgt]
         expect(str).to eq("12")
@@ -344,7 +349,7 @@ RSpec.describe "README.md" do
         expect(lft).to eq(4)
         expect(rgt).to eq(2)
       end
-      it "of course the factory functions are equivalent to the constructors (README.md:542)" do
+      it "of course the factory functions are equivalent to the constructors (README.md:549)" do
         expect(token).to eq(Lab42::Pair.new("12", 12))
         expect(node).to eq(Lab42::Triple.new("42", 4, 2))
       end

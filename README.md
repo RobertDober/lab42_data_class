@@ -465,16 +465,17 @@ Given a class that extends `DataClass`
         extend Lab42::DataClass
         attributes :age, member: false
         constraint :member, Set.new([false, true])
+        validate(:too_young_for_member) { |instance| !(instance.member && instance.age < 18) }
       end
     end
     let(:constraint_error) { Lab42::DataClass::ConstraintError }
+    let(:validation_error) { Lab42::DataClass::ValidationError }
     let(:my_instance) { my_class.new(age: 42) }
+    let(:my_vip)      { my_instance.merge(member: true) }
 ```
 
 Then we can observe that instances of such a class
 ```ruby
-    my_vip = my_instance.merge(member: true)
-
     expect(my_instance.to_h).to eq(age: 42, member: false)
     expect(my_vip.to_h).to eq(age: 42, member: true)
     expect(my_instance.member).to be_falsy
@@ -484,6 +485,12 @@ And we will get constraint errors if applicable
 ```ruby
     expect{my_instance.merge(member: nil)}
       .to raise_error(constraint_error)
+```
+
+And of course validations still work too
+```ruby
+    expect{ my_vip.merge(age: 17) }
+      .to raise_error(validation_error, "too_young_for_member")
 ```
 
 
