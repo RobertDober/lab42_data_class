@@ -464,17 +464,26 @@ Given a class that extends `DataClass`
       Class.new do
         extend Lab42::DataClass
         attributes :age, member: false
+        constraint :member, Set.new([false, true])
       end
     end
+    let(:constraint_error) { Lab42::DataClass::ConstraintError }
+    let(:my_instance) { my_class.new(age: 42) }
 ```
 
 Then we can observe that instances of such a class
 ```ruby
-    my_instance = my_class.new(age: 42)
     my_vip = my_instance.merge(member: true)
 
     expect(my_instance.to_h).to eq(age: 42, member: false)
     expect(my_vip.to_h).to eq(age: 42, member: true)
+    expect(my_instance.member).to be_falsy
+```
+
+And we will get constraint errors if applicable
+```ruby
+    expect{my_instance.merge(member: nil)}
+      .to raise_error(constraint_error)
 ```
 
 

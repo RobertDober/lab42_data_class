@@ -39,6 +39,11 @@ module Lab42
           .to_h
       end
 
+      def update!(with_positionals, with_keywords)
+        positionals.push(*with_positionals)
+        defaults.update(with_keywords)
+      end
+
       private
       def initialize(*args, **kwds, &blk)
         @klass = if Class === args.first
