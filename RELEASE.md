@@ -1,3 +1,7 @@
+# v0.5.1 2022-02-24
+
+- Convenience Constraints fixed for default values https://github.com/RobertDober/lab42_data_class/issues/9
+
 # v0.5.0 2022-02-23
 
 - Constraints https://github.com/RobertDober/lab42_data_class/issues/7
