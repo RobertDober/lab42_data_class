@@ -34,7 +34,7 @@ module Lab42
         end
 
         def _check_constraint_against_default_value(attr, value, constraint)
-          unless constraint.(value)
+          unless Maker.make_constraint(constraint).(value)
             "default value #{value.inspect} is not allowed for attribute #{attr.inspect}"
           end
         rescue StandardError => e
