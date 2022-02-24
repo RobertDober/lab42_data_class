@@ -40,6 +40,7 @@ Well let us [speculate about](https://github.com/RobertDober/speculate_about) it
 
 ## Context `DataClass`
 
+
 ### Context: `DataClass` function
 
 Given
@@ -451,6 +452,31 @@ And remark how bad unnamed validation errors might be
     expect{ point.new(x: 0, y: 1) }
       .to raise_error(validation_error, error_message_rgx)
 ```
+
+### Context: Usage with `extend`
+
+All the above mentioned features can be achieved with a more conventional syntax by extending a class
+with `Lab42::DataClass`
+
+Given a class that extends `DataClass`
+```ruby
+    let :my_class do
+      Class.new do
+        extend Lab42::DataClass
+        attributes :age, member: false
+      end
+    end
+```
+
+Then we can observe that instances of such a class
+```ruby
+    my_instance = my_class.new(age: 42)
+    my_vip = my_instance.merge(member: true)
+
+    expect(my_instance.to_h).to eq(age: 42, member: false)
+    expect(my_vip.to_h).to eq(age: 42, member: true)
+```
+
 
 ## Context: `Pair` and `Triple`
 
