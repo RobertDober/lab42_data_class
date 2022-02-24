@@ -23,6 +23,16 @@ module Lab42
           end
         end
 
+        def define_constraints(constraints)
+          errors = constraints.map(&define_constraint).compact
+          unless errors.empty?
+            raise ArgumentError,
+                  "constraints cannot be defined for undefined attributes #{errors.inspect}"
+          end
+
+          check_constraints_against_defaults(constraints)
+        end
+
         private
 
         def _check_constraint_against_default
@@ -68,13 +78,7 @@ module Lab42
           proxy = self
           ->(*) do
             define_method :with_constraint do |**constraints|
-              errors = constraints.map(&proxy.define_constraint).compact
-              unless errors.empty?
-                raise ArgumentError,
-                      "constraints cannot be defined for undefined attributes #{errors.inspect}"
-              end
-
-              proxy.check_constraints_against_defaults(constraints)
+              proxy.define_constraints(constraints)
               self
             end
           end

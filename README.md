@@ -40,6 +40,7 @@ Well let us [speculate about](https://github.com/RobertDober/speculate_about) it
 
 ## Context `DataClass`
 
+
 ### Context: `DataClass` function
 
 Given
@@ -451,6 +452,47 @@ And remark how bad unnamed validation errors might be
     expect{ point.new(x: 0, y: 1) }
       .to raise_error(validation_error, error_message_rgx)
 ```
+
+### Context: Usage with `extend`
+
+All the above mentioned features can be achieved with a more conventional syntax by extending a class
+with `Lab42::DataClass`
+
+Given a class that extends `DataClass`
+```ruby
+    let :my_class do
+      Class.new do
+        extend Lab42::DataClass
+        attributes :age, member: false
+        constraint :member, Set.new([false, true])
+        validate(:too_young_for_member) { |instance| !(instance.member && instance.age < 18) }
+      end
+    end
+    let(:constraint_error) { Lab42::DataClass::ConstraintError }
+    let(:validation_error) { Lab42::DataClass::ValidationError }
+    let(:my_instance) { my_class.new(age: 42) }
+    let(:my_vip)      { my_instance.merge(member: true) }
+```
+
+Then we can observe that instances of such a class
+```ruby
+    expect(my_instance.to_h).to eq(age: 42, member: false)
+    expect(my_vip.to_h).to eq(age: 42, member: true)
+    expect(my_instance.member).to be_falsy
+```
+
+And we will get constraint errors if applicable
+```ruby
+    expect{my_instance.merge(member: nil)}
+      .to raise_error(constraint_error)
+```
+
+And of course validations still work too
+```ruby
+    expect{ my_vip.merge(age: 17) }
+      .to raise_error(validation_error, "too_young_for_member")
+```
+
 
 ## Context: `Pair` and `Triple`
 

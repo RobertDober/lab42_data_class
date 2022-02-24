@@ -1,3 +1,7 @@
+# v0.6.0 2022-02-24
+
+- Implement `extend DataClass` in classes
+
 # v0.5.1 2022-02-24
 
 - Convenience Constraints fixed for default values https://github.com/RobertDober/lab42_data_class/issues/9
