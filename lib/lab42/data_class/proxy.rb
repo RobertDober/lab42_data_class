@@ -39,6 +39,7 @@ module Lab42
 
       def define_class!
         return if @klass_defined
+
         @klass_defined = true
         klass.module_eval(&_define_attr_reader)
         klass.module_eval(&_define_initializer) if Class === klass
@@ -63,7 +64,7 @@ module Lab42
 
       def to_hash(data_class_instance)
         all_attributes
-          .inject({}) { |result, (k,_)| result.merge(k => data_class_instance[k]) }
+          .inject({}) { |result, (k, _)| result.merge(k => data_class_instance[k]) }
       end
 
       def update!(with_positionals, with_keywords)

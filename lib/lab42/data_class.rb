@@ -13,10 +13,10 @@ module Lab42
     def self.extended(extendee)
       base_proxy =
         extendee
-          .ancestors
-          .grep(self)
-          .drop(1)
-          .first
+        .ancestors
+        .grep(self)
+        .drop(1)
+        .first
           &.__data_class_proxy__
 
       proxy = base_proxy ? Proxy.from_parent(base_proxy, extendee) : Proxy.new(extendee)
