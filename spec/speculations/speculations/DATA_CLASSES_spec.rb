@@ -116,4 +116,62 @@ RSpec.describe "speculations/DATA_CLASSES.md" do
       .to eq(line: "# Hello", content: "Hello", lnb: 0, level: 1)
     end
   end
+  # speculations/DATA_CLASSES.md:157
+  context "Validation" do
+    # speculations/DATA_CLASSES.md:166
+    let(:validation_error) { Lab42::DataClass::ValidationError }
+    class Person
+    extend Lab42::DataClass
+
+    attributes :name, :age, member: false
+
+    validate :members_are_18 do
+    _1.age >= 18 || !_1.member
+    end
+    end
+    it "we can assure that all members are at least 18 years old (speculations/DATA_CLASSES.md:180)" do
+      expect do
+      Person.new(name: "junior", age: 17, member: true)
+      end
+      .to raise_error(validation_error)
+    end
+    it "of course validation is also carried out when new instances are derived (speculations/DATA_CLASSES.md:188)" do
+      senior = Person.new(name: "senior", age: 42, member: true)
+      expect do
+      senior.merge(name: "offspring", age: 10)
+      end
+      .to raise_error(validation_error)
+    end
+    # speculations/DATA_CLASSES.md:196
+    context "Validation, a code smell?" do
+      # speculations/DATA_CLASSES.md:202
+      module Person1
+      extend Lab42::DataClass
+
+      attributes :name, :age, :member
+      constraint :member, Set.new([false, true])
+      end
+
+      class Adult
+      include Person1
+      extend Lab42::DataClass
+
+      constraint :age, [:>=, 18]
+      end
+
+      class Child
+      include Person1
+      extend Lab42::DataClass
+
+      constraint :age, [:<, 18]
+      derive(:member){ false }
+      end
+      it "it also works _better_ in the way that we cannot _merge_ an `Adult` into a `Child` (speculations/DATA_CLASSES.md:229)" do
+        expect{ Adult.new(name: "senior", age: 18, member: true) }
+        .not_to raise_error
+
+        expect(Child.new(name: "junior", age: 17).to_h).to eq(name: "junior", age: 17, member: false)
+      end
+    end
+  end
 end

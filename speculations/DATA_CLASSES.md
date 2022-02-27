@@ -153,4 +153,86 @@ Then we can observe how _defaults_ and _derivations_ provide us with the final o
     expect(HeaderToken.new(line: "# Hello").to_h)
       .to eq(line: "# Hello", content: "Hello", lnb: 0, level: 1)
 ```
+
+### Context: Validation
+
+With _Derived Attributes_ we could assure that dependant data was correct, but sometimes dependency is more lose and can be
+expressed with _Validations_
+
+The difference between _Constraints_ and _Validations_ is simply that a _Validation_ is a block that will validate the
+**whole instance** of a _Data Class_.
+
+Given a DataClass
+```ruby
+    let(:validation_error) { Lab42::DataClass::ValidationError }
+    class Person
+      extend Lab42::DataClass
+
+      attributes :name, :age, member: false
+
+      validate :members_are_18 do
+        _1.age >= 18 || !_1.member
+      end
+    end
+```
+
+Then we can assure that all members are at least 18 years old
+```ruby
+    expect do
+      Person.new(name: "junior", age: 17, member: true)
+    end
+      .to raise_error(validation_error)
+```
+
+And of course validation is also carried out when new instances are derived
+```ruby
+    senior = Person.new(name: "senior", age: 42, member: true)
+    expect do
+      senior.merge(name: "offspring", age: 10)
+    end
+      .to raise_error(validation_error)
+```
+
+#### Context: Validation, a code smell?
+
+I guess to many validations might in fact be a code smell, and even the simple example above might be better
+modelled with _Constraints_ in mind
+
+Given a Person module
+```ruby
+    module Person1
+      extend Lab42::DataClass
+
+      attributes :name, :age, :member
+      constraint :member, Set.new([false, true])
+    end
+
+    class Adult
+      include Person1
+      extend Lab42::DataClass
+
+      constraint :age, [:>=, 18]
+    end
+
+    class Child
+      include Person1
+      extend Lab42::DataClass
+
+      constraint :age, [:<, 18]
+      derive(:member){ false }
+    end
+```
+
+Seems to be a much cleaner approach
+
+Then it also works _better_ in the way that we cannot _merge_ an `Adult` into a `Child`
+```ruby
+    expect{ Adult.new(name: "senior", age: 18, member: true) }
+      .not_to raise_error
+
+    expect(Child.new(name: "junior", age: 17).to_h).to eq(name: "junior", age: 17, member: false)
+```
+
+
+
 <!--SPDX-License-Identifier: Apache-2.0-->

@@ -128,8 +128,7 @@ module Lab42
       end
 
       def _define_methods
-        class << klass; self end
-          .tap { |singleton| _define_singleton_methods(singleton) }
+        _define_singleton_methods(klass.singleton_class)
         klass.module_eval(&_define_access)
         klass.module_eval(&_define_to_h)
         klass.module_eval(&_define_merge)
