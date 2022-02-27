@@ -1,3 +1,11 @@
+# v0.7.0 2022-02-25
+
+- Inheritance
+
+- Derived Attributes
+
+- Much better documentation/speculations
+
 # v0.6.0 2022-02-24
 
 - Implement `extend DataClass` in classes

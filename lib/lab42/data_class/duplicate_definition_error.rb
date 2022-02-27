@@ -2,7 +2,8 @@
 
 module Lab42
   module DataClass
-    VERSION = "0.6.1"
+    class DuplicateDefinitionError < RuntimeError
+    end
   end
 end
 #  SPDX-License-Identifier: Apache-2.0

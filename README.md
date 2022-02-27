@@ -11,9 +11,31 @@
 
 An Immutable DataClass for Ruby
 
-Exposes a class factory function `Kernel::DataClass` and a class
-modifer `Module#dataclass`, also creates two _tuple_ classes, `Pair` and
-`Triple`
+Exposes a class factory function `Kernel::DataClass` and a module `Lab42::DataClass` which can
+extend classes to become _Data Classes_.
+
+Also exposes two _tuple_ classes, `Pair` and `Triple`
+
+## Synopsis
+
+Having immutable Objects has many well known advantages that I will not ponder upon in detail here.
+
+One advantage which is of particular interest though is that, as every, _modification_ is in fact the
+creation of a new object **strong contraints** on the data can **easily** be maintained, and this
+library makes that available to the user.
+
+Therefore we can summarise the features (or not so features, that is for you to decide and you to chose to use or not):
+
+  - Immutable with an Interface à la `OpenStruct`
+  - Attributes are predefined and can have **default values**
+  - Construction with _keyword arguments_, **exclusively**
+  - Conversion to `Hash` instances (if you must)
+  - Pattern matching exactly like `Hash` instances
+  - Possibility to impose **strong constraints** on attributes
+  - Predefined constraints and concise syntax for constraints
+  - Possibility to impose **arbitrary validation** (constraints on the whole object)
+  - Declaration of **dependent attributes** which are memoized (thank you _Immutability_)
+  - Inheritance with **mixin of other dataclasses** (multiple if you must)
 
 ## Usage
 
@@ -33,13 +55,51 @@ In your code
 require 'lab42/data_class'
 ```
 
+## Speculations (literate specs)
 
-## So what does it do?
+The following specs are executed with the [speculate about](https://github.com/RobertDober/speculate_about) gem.
 
-Well let us [speculate about](https://github.com/RobertDober/speculate_about) it to find out:
+Given that we have imported the `Lab42` namespace
+```ruby
+    DataClass = Lab42::DataClass
+```
 
-## Context `DataClass`
+## Context: Data Classes
 
+### Basic Use Case
+
+Given a simple Data Class
+```ruby
+    class SimpleDataClass
+      extend DataClass
+      attributes :a, :b
+    end
+```
+
+And an instance of it
+```ruby
+    let(:simple_instance) { SimpleDataClass.new(a: 1, b: 2) }
+```
+
+Then we access the fields
+```ruby
+    expect(simple_instance.a).to eq(1)
+    expect(simple_instance.b).to eq(2)
+```
+
+And we convert to a hash
+```ruby
+    expect(simple_instance.to_h).to eq(a: 1, b: 2)
+```
+
+And we can derive new instances
+```ruby
+    new_instance = simple_instance.merge(b: 3)
+    expect(new_instance.to_h).to eq(a: 1, b: 3)
+    expect(simple_instance.to_h).to eq(a: 1, b: 2)
+```
+
+For detailed speculations please see [here](speculations/DATA_CLASSES.md)
 
 ### Context: `DataClass` function
 
@@ -144,7 +204,8 @@ Then we still get frozen instances
     expect(instance1).to be_frozen
 ```
 
-### Context: Inheritance
+
+#### Context: Inheritance with `DataClass` factory
 
 ... is a no, we do not want inheritance although we **like** code reuse, how to do it then?
 

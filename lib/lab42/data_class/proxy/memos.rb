@@ -4,12 +4,20 @@ module Lab42
   module DataClass
     class Proxy
       module Memos
+        def all_attributes
+          @__all_attributes__ ||= members&.union(Set.new(derived_attributes.keys))
+        end
+
         def constraints
           @__constraints__ ||= Hash.new { |h, k| h[k] = [] }
         end
 
         def defaults
           @__defaults__ ||= {}
+        end
+
+        def derived_attributes
+          @__derived_attributes__ ||= {}
         end
 
         def members

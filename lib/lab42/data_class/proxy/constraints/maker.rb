@@ -19,6 +19,8 @@ module Lab42
               -> { constraint.match?(_1) }
             when UnboundMethod
               -> { constraint.bind(_1).() }
+            when Module
+              -> { constraint === _1 }
             else
               _make_member_constraint(constraint)
             end

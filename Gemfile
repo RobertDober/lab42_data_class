@@ -8,7 +8,7 @@ gemspec
 
 group :development, :test do
   gem "debug"
-  gem "pry"
+  gem "pry-doc"
   gem "rspec", "~> 3.10.0"
   gem "rspec-core", "~> 3.10.0"
   gem "rubocop", "~> 1.25.0"
