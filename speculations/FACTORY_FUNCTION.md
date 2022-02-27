@@ -45,13 +45,12 @@ Then we still get frozen instances
     expect(instance1).to be_frozen
 ```
 
-
 #### Context: Inheritance with `DataClass` factory
 
-... is a no, we do not want inheritance although we **like** code reuse, how to do it then?
 
-Well there shall be many different possibilities, depending on your style, use case and
-context, here is just one example:
+... is a no, look [here](speculations/DATA_CLASSES.md) if you want inheritance.
+
+Functional approaches are of course possible, depending on your style, use case and context, here is just one example:
 
 Given a class factory
 ```ruby
@@ -229,7 +228,6 @@ And defining constraints for undefined attributes is not the best of ideas
       .to raise_error(ArgumentError, "constraints cannot be defined for undefined attributes [:b]")
 ```
 
-
 #### Context: Convenience Constraints
 
 Often repeating patterns are implemented as non lambda constraints, depending on the type of a constraint
@@ -296,6 +294,18 @@ Then we can also have a regex based constraint
     expect{vowel.new(word: "krk")}.to raise_error(constraint_error)
 ```
 
+##### Any Class
+
+If for example want values just to be of some class, well easy
+
+Then we can use the class as a constraint
+```ruby
+    container = DataClass(:value).with_constraint(value: String)
+
+    expect(container.new(value: "42")[:value]).to eq("42")
+    expect{ container.new(value: 42) }.to raise_error(constraint_error, "value 42 is not allowed for attribute :value")
+```
+
 ##### Other callable objects as constraints
 
 
@@ -355,6 +365,19 @@ And remark how bad unnamed validation errors might be
       .to raise_error(validation_error, error_message_rgx)
 ```
 
+#### Context: Derived Attributes
+
+As with the class based usage we can define Derived Attributes with the factory
+
+Given a data class with a derived attribute
+```ruby
+    let(:pythagoras) { DataClass(:a, :b).derive(:c){ Math.sqrt(_1.a**2 + _1.b**2)} }
+```
+
+Then the hypotenuse is derived
+```ruby
+    expect(pythagoras.new(a: 3.0, b: 4.0)[:c]).to eq(5.0)
+```
 ### Context: Usage with `extend`
 
 All the above mentioned features can be achieved with a more conventional syntax by extending a class

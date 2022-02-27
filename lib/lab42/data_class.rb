@@ -26,11 +26,6 @@ module Lab42
       end
     end
 
-    def self.import!(into)
-      into.include Lab42
-      into.include self
-    end
-
     def attributes(*args, **kwds)
       __data_class_proxy__.tap do |proxy|
         proxy.update!(args, kwds)

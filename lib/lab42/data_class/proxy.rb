@@ -2,13 +2,14 @@
 
 require 'set'
 require_relative 'proxy/constraints'
+require_relative 'proxy/derived'
 require_relative 'proxy/memos'
 require_relative 'proxy/validations'
 require_relative 'proxy/mixin'
 module Lab42
   module DataClass
     class Proxy
-      include Constraints, Memos, Validations
+      include Constraints, Derived, Memos, Validations
 
       attr_reader :actual_params, :block, :klass, :klass_defined
 
@@ -138,6 +139,7 @@ module Lab42
         singleton.module_eval(&_define_freezing_constructor)
         singleton.module_eval(&_define_to_proc)
         singleton.module_eval(&_define_with_constraint)
+        singleton.module_eval(&_define_derived)
         singleton.module_eval(&_define_with_validations)
       end
 
