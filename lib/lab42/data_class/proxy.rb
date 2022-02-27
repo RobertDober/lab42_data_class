@@ -2,15 +2,33 @@
 
 require 'set'
 require_relative 'proxy/constraints'
+require_relative 'proxy/derived'
 require_relative 'proxy/memos'
 require_relative 'proxy/validations'
 require_relative 'proxy/mixin'
 module Lab42
   module DataClass
     class Proxy
-      include Constraints, Memos, Validations
+      include Constraints, Derived, Memos, Validations
 
-      attr_reader :actual_params, :block, :klass
+      attr_reader :actual_params, :block, :klass, :klass_defined
+
+      def self.from_parent(parent, klass)
+        new(klass).tap do |proxy|
+          proxy.positionals.push(*parent.positionals)
+          proxy.defaults.update(parent.defaults)
+          proxy.constraints.update(parent.constraints)
+          proxy.validations.push(*parent.validations)
+        end
+      end
+
+      def access(data_class_instance, key)
+        if all_attributes.member?(key)
+          data_class_instance.send(key)
+        else
+          raise KeyError, "#{key} is not an attribute of #{data_class_instance}"
+        end
+      end
 
       def check!(**params)
         @actual_params = params
@@ -21,12 +39,24 @@ module Lab42
       end
 
       def define_class!
+        return if @klass_defined
+
+        @klass_defined = true
         klass.module_eval(&_define_attr_reader)
-        klass.module_eval(&_define_initializer)
+        klass.module_eval(&_define_initializer) if Class === klass
         _define_methods
         klass.include(Mixin)
         klass.module_eval(&block) if block
         klass
+      end
+
+      def define_derived_attribute(name, &blk)
+        positionals.delete(name)
+        defaults.delete(name)
+        derived_attributes.update(name => true) do |_key, _old,|
+          raise DuplicateDefinitionError, "Redefinition of derived attribute #{name}"
+        end
+        klass.module_eval(&_define_derived_attribute(name, &blk))
       end
 
       def init(data_class, **params)
@@ -34,9 +64,8 @@ module Lab42
       end
 
       def to_hash(data_class_instance)
-        members
-          .map { [_1, data_class_instance.instance_variable_get("@#{_1}")] }
-          .to_h
+        all_attributes
+          .inject({}) { |result, (k, _)| result.merge(k => data_class_instance[k]) }
       end
 
       def update!(with_positionals, with_keywords)
@@ -46,12 +75,13 @@ module Lab42
 
       private
       def initialize(*args, **kwds, &blk)
-        @klass = if Class === args.first
+        @klass = if Module === args.first
                    args.shift
                  else
                    Class.new
                  end
 
+        @klass_defined = false
         @block = blk
         defaults.update(kwds)
         positionals.push(*args)
@@ -61,6 +91,12 @@ module Lab42
         proxy = self
         ->(*) do
           attr_reader(*proxy.members)
+        end
+      end
+
+      def _define_derived_attribute(name, &blk)
+        ->(*) do
+          define_method(name) { blk.call(self) }
         end
       end
 
@@ -93,8 +129,8 @@ module Lab42
       end
 
       def _define_methods
-        class << klass; self end
-          .tap { |singleton| _define_singleton_methods(singleton) }
+        _define_singleton_methods(klass.singleton_class)
+        klass.module_eval(&_define_access)
         klass.module_eval(&_define_to_h)
         klass.module_eval(&_define_merge)
       end
@@ -103,7 +139,17 @@ module Lab42
         singleton.module_eval(&_define_freezing_constructor)
         singleton.module_eval(&_define_to_proc)
         singleton.module_eval(&_define_with_constraint)
+        singleton.module_eval(&_define_derived)
         singleton.module_eval(&_define_with_validations)
+      end
+
+      def _define_access
+        proxy = self
+        ->(*) do
+          define_method :[] do |key|
+            proxy.access(self, key)
+          end
+        end
       end
 
       def _define_to_h
