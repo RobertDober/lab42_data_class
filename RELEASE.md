@@ -2,6 +2,9 @@
 
 - Fixed bug for constraint on attribute defined in parent https://github.com/RobertDober/lab42_data_class/issues/14
 
+- Documentation for already implemented issue error on multiple derived attributes 
+  https://github.com/RobertDober/lab42_data_class/issues/12
+
 # v0.7.0 2022-02-27
 
 - Inheritance
