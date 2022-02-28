@@ -14,7 +14,7 @@ module Lab42
 
         def define_constraint
           ->((attr, constraint)) do
-            if members.member?(attr)
+            if members!.member?(attr)
               constraints[attr] << Maker.make_constraint(constraint)
               nil
             else
@@ -26,7 +26,7 @@ module Lab42
         def define_constraints(constraints)
           errors = constraints.map(&define_constraint).compact
           unless errors.empty?
-            raise ArgumentError,
+            raise UndefinedAttributeError,
                   "constraints cannot be defined for undefined attributes #{errors.inspect}"
           end
 

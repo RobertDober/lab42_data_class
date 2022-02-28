@@ -166,7 +166,7 @@ RSpec.describe "speculations/FACTORY_FUNCTION.md" do
     end
     it "defining constraints for undefined attributes is not the best of ideas (speculations/FACTORY_FUNCTION.md:226)" do
       expect { DataClass(a: 1).with_constraint(b: -> {true}) }
-      .to raise_error(ArgumentError, "constraints cannot be defined for undefined attributes [:b]")
+      .to raise_error(Lab42::DataClass::UndefinedAttributeError, "constraints cannot be defined for undefined attributes [:b]")
     end
     # speculations/FACTORY_FUNCTION.md:231
     context "Convenience Constraints" do
