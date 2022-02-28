@@ -26,6 +26,10 @@ module Lab42
                            end
         end
 
+        def members!
+          @__members__ = Set.new(positionals + defaults.keys)
+        end
+
         def positionals
           @__positionals__ ||= []
         end
