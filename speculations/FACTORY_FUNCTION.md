@@ -417,3 +417,5 @@ And of course validations still work too
     expect{ my_vip.merge(age: 17) }
       .to raise_error(validation_error, "too_young_for_member")
 ```
+
+<!--SPDX-License-Identifier: Apache-2.0-->

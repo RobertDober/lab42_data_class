@@ -1,3 +1,7 @@
+# v0.7.1 2022-02-28
+
+- Fixed bug for constraint on attribute defined in parent https://github.com/RobertDober/lab42_data_class/issues/14
+
 # v0.7.0 2022-02-27
 
 - Inheritance
@@ -25,3 +29,4 @@
 # v0.4.1 2022-02-22
 
 - #merge did not return correct class for returned object https://github.com/RobertDober/lab42_data_class/issues/4
+<!--SPDX-License-Identifier: Apache-2.0-->

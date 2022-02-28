@@ -234,5 +234,28 @@ Then it also works _better_ in the way that we cannot _merge_ an `Adult` into a 
 ```
 
 
+### Context: Error Handling
+
+#### Duplicate Deriveds
+
+Given an Operation DataClass
+```ruby
+    let(:duplicate_definition_error) { Lab42::DataClass::DuplicateDefinitionError }
+```
+
+
+Then we must not define the same operation twice
+```ruby
+    expect do
+      Class.new do
+        extend Lab42::DataClass
+        attributes(lhs: 0, rhs: 0)
+
+        derive(:result) {_1.lhs + _1.rhs}
+        derive(:result) {_1.lhs + _1.rhs}
+      end
+    end
+      .to raise_error(duplicate_definition_error, "Redefinition of derived attribute :result")
+```
 
 <!--SPDX-License-Identifier: Apache-2.0-->
