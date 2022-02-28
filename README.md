@@ -1,5 +1,4 @@
 
-
 [![Issue Count](https://codeclimate.com/github/RobertDober/lab42_data_class/badges/issue_count.svg)](https://codeclimate.com/github/RobertDober/lab42_data_class)
 [![CI](https://github.com/robertdober/lab42_data_class/workflows/CI/badge.svg)](https://github.com/robertdober/lab42_data_class/actions)
 [![Coverage Status](https://coveralls.io/repos/github/RobertDober/lab42_data_class/badge.svg?branch=main)](https://coveralls.io/github/RobertDober/lab42_data_class?branch=main)
@@ -8,7 +7,6 @@
 
 
 # Lab42::DataClass
-
 
 An Immutable DataClass for Ruby
 
@@ -41,7 +39,7 @@ Therefore we can summarise the features (or not so features, that is for you to 
 ## Usage
 
 ```sh
-gem install lab42_data_class
+  gem install lab42_data_class
 ```
 
 With bundler

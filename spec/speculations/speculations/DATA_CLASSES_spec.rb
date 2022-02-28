@@ -174,4 +174,21 @@ RSpec.describe "speculations/DATA_CLASSES.md" do
       end
     end
   end
+  # speculations/DATA_CLASSES.md:237
+  context "Error Handling" do
+    # speculations/DATA_CLASSES.md:242
+    let(:duplicate_definition_error) { Lab42::DataClass::DuplicateDefinitionError }
+    it "we must not define the same operation twice (speculations/DATA_CLASSES.md:248)" do
+      expect do
+      Class.new do
+      extend Lab42::DataClass
+      attributes(lhs: 0, rhs: 0)
+
+      derive(:result) {_1.lhs + _1.rhs}
+      derive(:result) {_1.lhs + _1.rhs}
+      end
+      end
+      .to raise_error(duplicate_definition_error, "Redefinition of derived attribute :result")
+    end
+  end
 end

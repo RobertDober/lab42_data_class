@@ -54,7 +54,7 @@ module Lab42
         positionals.delete(name)
         defaults.delete(name)
         derived_attributes.update(name => true) do |_key, _old,|
-          raise DuplicateDefinitionError, "Redefinition of derived attribute #{name}"
+          raise DuplicateDefinitionError, "Redefinition of derived attribute #{name.inspect}"
         end
         klass.module_eval(&_define_derived_attribute(name, &blk))
       end
