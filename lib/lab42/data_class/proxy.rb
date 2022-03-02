@@ -30,12 +30,11 @@ module Lab42
         end
       end
 
-      def check!(**params)
-        @actual_params = params
+      def check!(params, merge_with = defaults)
         raise ArgumentError, "missing initializers for #{_missing_initializers}" unless _missing_initializers.empty?
         raise ArgumentError, "illegal initializers #{_illegal_initializers}" unless _illegal_initializers.empty?
 
-        _check_constraints!(defaults.merge(params))
+        _check_constraints!(merge_with.merge(params))
       end
 
       def define_class!
@@ -61,6 +60,10 @@ module Lab42
 
       def init(data_class, **params)
         _init(data_class, defaults.merge(params))
+      end
+
+      def set_actual_params(params)
+        @actual_params = params
       end
 
       def to_hash(data_class_instance)
@@ -108,10 +111,28 @@ module Lab42
       end
 
       def _define_freezing_constructor
+        proxy = self
         ->(*) do
-          define_method :new do |*a, **p, &b|
-            super(*a, **p, &b).freeze
+          define_method :new do |**params, &b|
+            allocate.tap do |o|
+              proxy.set_actual_params(params)
+              proxy.check!(params)
+              o.send(:initialize, **params, &b)
+            end.freeze
           end
+        end
+      end
+
+      def _define_merging_constructor
+        proxy = self
+        ->(*) do
+          define_method :_new_from_merge do |new_params, params|
+            allocate.tap do |o|
+              proxy.check!(new_params, {})
+              o.send(:initialize, **params)
+            end.freeze
+          end
+          private :_new_from_merge
         end
       end
 
@@ -119,7 +140,6 @@ module Lab42
         proxy = self
         ->(*) do
           define_method :initialize do |**params|
-            proxy.check!(**params)
             proxy.init(self, **params)
             proxy.validate!(self)
           end
@@ -130,7 +150,7 @@ module Lab42
         ->(*) do
           define_method :merge do |**params|
             values = to_h.merge(params)
-            self.class.new(**values)
+            self.class.send(:_new_from_merge, params, values)
           end
         end
       end
@@ -144,6 +164,7 @@ module Lab42
 
       def _define_singleton_methods(singleton)
         singleton.module_eval(&_define_freezing_constructor)
+        singleton.module_eval(&_define_merging_constructor)
         singleton.module_eval(&_define_to_proc)
         singleton.module_eval(&_define_with_constraint)
         singleton.module_eval(&_define_derived)
