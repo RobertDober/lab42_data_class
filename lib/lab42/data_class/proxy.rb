@@ -96,6 +96,13 @@ module Lab42
 
       def _define_derived_attribute(name, &blk)
         ->(*) do
+          if instance_methods.include?(name)
+            begin
+              remove_method(name)
+            rescue StandardError
+              nil
+            end
+          end
           define_method(name) { blk.call(self) }
         end
       end
