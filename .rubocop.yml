@@ -37,6 +37,9 @@ Metrics/ClassLength:
 Metrics/MethodLength:
   Max: 16
 
+Naming/AccessorMethodName:
+  Enabled: false
+
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 
