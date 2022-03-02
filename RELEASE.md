@@ -1,3 +1,7 @@
+# v0.7.2 2022-03-??
+
+- Fixed warining on redefinition of derive method https://github.com/RobertDober/lab42_data_class/issues/17
+
 # v0.7.1 2022-02-28
 
 - Fixed bug for constraint on attribute defined in parent https://github.com/RobertDober/lab42_data_class/issues/14
