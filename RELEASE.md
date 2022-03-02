@@ -1,6 +1,8 @@
 # v0.7.2 2022-03-??
 
-- Fixed warining on redefinition of derive method https://github.com/RobertDober/lab42_data_class/issues/17
+- Fixed warning on redefinition of derive method https://github.com/RobertDober/lab42_data_class/issues/17
+
+- Fixed unnecessary constraint checks after merge https://github.com/RobertDober/lab42_data_class/issues/19
 
 # v0.7.1 2022-02-28
 
