@@ -4,6 +4,7 @@ module Kernel
   Constraint = Lab42::DataClass::Constraint
   Maker = Lab42::DataClass::Proxy::Constraints::Maker # TODO: Move Maker to Lab42::DataClass:ConstraintMaker
   Anything = Constraint.new(name: "Anything", function: ->(_) { true })
+  Boolean = Constraint.new(name: "Boolean", function: -> { [false, true].member?(_1) })
 
   def All?(constraint = nil, &blk)
     constraint = Maker.make_constraint(constraint, &blk)
@@ -27,6 +28,16 @@ module Kernel
       constraints.any?{ _1.(value) }
     end
     Constraint.new(name: "Choice(#{constraints.join(', ')})", function: f)
+  end
+
+  def Contains(str)
+    f = -> { _1.include?(str) rescue false }
+    Constraint.new(name: "Contains(#{str})", function: f)
+  end
+
+  def EndsWith(str)
+    f = -> { _1.end_with?(str) rescue false }
+    Constraint.new(name: "EndsWith(#{str})", function: f)
   end
 
   def Lambda(arity)
@@ -55,6 +66,11 @@ module Kernel
       Lab42::Pair === _1 && fst_constraint.(_1.first) && snd_constraint.(_1.second)
     end
     Constraint.new(name: "PairOf(#{fst_constraint}, #{snd_constraint})", function: f)
+  end
+
+  def StartsWith(str)
+    f = -> { _1.start_with?(str) rescue false }
+    Constraint.new(name: "StartsWith(#{str})", function: f)
   end
 
   def TripleOf(fst, snd, trd)

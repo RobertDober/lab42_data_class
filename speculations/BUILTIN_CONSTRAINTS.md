@@ -17,7 +17,7 @@ as a paramter can also take a block, the block is registered as a constraint and
 Then surprisingly
 ```ruby
     bad_constraint = DataClass(:value).with_constraint(value: NilOr{Set.new(%w[x y z])})
-    expect{ bad_constraint.new(value: "a") }.not_to raise_error(constraint_error) # BUT SHOULD
+    expect{ bad_constraint.new(value: "a") }.not_to raise_error # BUT SHOULD
 ```
 
 But the following (useless complicated) works:
@@ -174,16 +174,91 @@ But indeed:
 ```ruby
     expect{ entry.new(value: Pair(42, "hello")) }.to raise_error(constraint_error)
 ```
-- `Lambda(arity=-1)` a callable with the given arity → `-> { _1.respond_to?(:arity) && _1.arity == arity }`
 
-### String Constraints
+#### Context: `Lambda(arity)`
 
-- `StartsWith(string)` → `-> { _1.start_with?(string) }`
-- `EndsWith(string)` → `-> { _1.end_with?(string) }`
-- `Contains(string)` → `-> { _1.contains?(string) }`
+Actually `Lambda` stands for a _callable_ with the given `arity`
+
+Then we see that the following callables are compliant
+```ruby
+    callable1 = Lambda(1)
+    compliants = [
+      -> { _1 },
+      1.method(:+) ]
+    non_compliants = [
+      -> { nil },
+      42,
+      Set.method(:new) # arity -1
+      ]
+    compliants.each do |compliant|
+      expect(callable1.(compliant)).to be_truthy
+    end
+    non_compliants.each do |culprit|
+      expect(callable1.(culprit)).to be_falsy
+    end
+```
+
+### Context: String Constraints
+
+Given these builtins
+```ruby
+    let(:starts) { StartsWith("<") }
+    let(:ends)   { EndsWith(">") }
+    let(:container) { Contains("div") }
+```
+
+Then we can check
+```ruby
+    expect(starts.("<hello")).to be_truthy
+    expect(starts.("<")).to be_truthy
+    expect(starts.(" ")).to be_falsy
+    expect(starts.("")).to be_falsy
+    expect(starts.(" <@")).to be_falsy
+```
+
+And also
+```ruby
+    expect(ends.(">")).to be_truthy
+    expect(ends.("<hello>")).to be_truthy
+    expect(ends.("")).to be_falsy
+    expect(ends.("> ")).to be_falsy
+```
+
+And eventually
+```ruby
+    expect(container.("div")).to be_truthy
+    expect(container.("some <div>")).to be_truthy
+    expect(container.("some <dv>")).to be_falsy
+    expect(container.("")).to be_falsy
+```
+
 
 ### Miscellaneous
 
-- `Anything` useful with `PairOf` or `TripleOf` e.g. `PairOf(Symbol, Anything)` → `-> {true}`
-- `Boolean` → `Set.new([false, true])`
+#### Context: `Anything`
+
+This has already been shown (bad practice, but should be obvious)
+
+And we see
+```ruby
+    expect(Anything.(nil)).to eq(true)
+    expect(Anything.(42)).to eq(true)
+    expect(Anything.(BasicObject.new)).to eq(true)
+    expect(Anything.(self)).to eq(true)
+```
+
+#### Context: `Boolean` 
+
+As we do not have such a type in Ruby this constraint is quite useful
+
+And it is true for exactly two values
+```ruby
+    expect(Boolean.(true)).to eq(true)
+    expect(Boolean.(false)).to eq(true)
+    expect(Boolean.(nil)).to eq(false)
+    expect(Boolean.(42)).to eq(false)
+    expect(Boolean.([])).to eq(false)
+    expect(Boolean.([false])).to eq(false)
+    
+```
 <!--SPDX-License-Identifier: Apache-2.0-->
