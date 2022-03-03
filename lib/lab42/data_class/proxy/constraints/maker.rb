@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "lab42/data_class/constraint"
 module Lab42
   module DataClass
     class Proxy
@@ -7,9 +8,17 @@ module Lab42
         module Maker
           extend self
 
-          def make_constraint(constraint)
+          def make_constraint(constraint, &blk)
+            raise ArgumentError, "must not pass a callable #{constraint} and a block" if constraint && blk
+
+            _make_constraint(constraint || blk)
+          end
+
+          private
+
+          def _make_constraint(constraint)
             case constraint
-            when Proc, Method
+            when Lab42::DataClass::Constraint, Proc, Method
               constraint
             when Symbol
               -> { _1.send(constraint) }
@@ -25,8 +34,6 @@ module Lab42
               _make_member_constraint(constraint)
             end
           end
-
-          private
 
           def _make_member_constraint(constraint)
             if constraint.respond_to?(:member?)
