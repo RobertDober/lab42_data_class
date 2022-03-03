@@ -64,6 +64,52 @@ Or
       .to raise_error(constraint_error)
 ```
 
+#### Context: Builtin Constraints
+
+There are the following _Builtin Constraints_
+
+##### Enumerable Constraints
+
+- `All?(constraint)` a constraint that holds for all elements → `-> { _1.all?(&constraint) }`
+- `Any?` a constraint that holds for any element → `-> { _1.any?(&constraint) }`
+- `PairOf(fst, snd)` →  `-> { Pair === _1 && fst.(_1.first) && snd.(_1.second) }`
+- `TripleOf(fst, snd, trd)` → `-> { Triple === _1 && fst.(_1.first) && snd.(_1.second) && trd.(_1.third) }`
+
+##### High Order Constraints
+
+- `Option(constraint)` either nil or satisfies the constraint → `-> { _1.nil? || constraint.(_1) }`
+- `Not(constraint)` negation of a constraint → `-> { !constraint.(_1) }`
+- `Choice(*constraints)` satisfies one of the constraints, again useful in v0.8 with `ListOf`, e.g. `ListOf(Choice(Symbol, String))` → `-> { |v| constraints.any?{ |c| c.(v) } }`
+- `Lambda(arity=-1)` a callable with the given arity → `-> { _1.respond_to?(:arity) && _1.arity == arity }`
+
+##### String Constraints
+
+- `StartsWith(string)` → `-> { _1.start_with?(string) }`
+- `EndsWith(string)` → `-> { _1.end_with?(string) }`
+- `Contains(string)` → `-> { _1.contains?(string) }`
+
+##### Miscellaneous
+
+- `Anything` useful with `PairOf` or `TripleOf` e.g. `PairOf(Symbol, Anything)` → `-> {true}`
+- `Boolean` → `Set.new([false, true])`
+
+Here is a simple example of their usage, detailed description can be found [here](speculations/BUILTIN_CONSTRAINTS.md)
+
+Given a dataclass with a builtin constraint (needs an explicit require)
+```ruby
+    require "lab42/data_class/builtin_constraints"
+    let(:entry) { DataClass(:value).with_constraint(value: PairOf(Symbol, Anything)) }
+```
+
+Then these constraints are well observed
+```ruby
+    expect(entry.new(value: Pair(:world, 42)).value).to eq(Pair(:world, 42))
+    expect{ entry.new(value: Pair("world", 43)) }
+      .to raise_error(Lab42::DataClass::ConstraintError)
+    expect{ entry.new(value: Triple(:world, 43, nil)) }
+      .to raise_error(Lab42::DataClass::ConstraintError)
+```
+
 ### Context: Defaults
 
 Let us fix the code smell and introduce _default values for attributes_ at the same time

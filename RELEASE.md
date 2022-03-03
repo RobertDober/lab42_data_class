@@ -4,6 +4,8 @@
 
 - Fixed unnecessary constraint checks after merge https://github.com/RobertDober/lab42_data_class/issues/19
 
+- Implemented Custom Constraints https://github.com/RobertDober/lab42_data_class/issues/18
+
 # v0.7.1 2022-02-28
 
 - Fixed bug for constraint on attribute defined in parent https://github.com/RobertDober/lab42_data_class/issues/14
