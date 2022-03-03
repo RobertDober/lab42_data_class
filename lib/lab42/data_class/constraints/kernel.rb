@@ -28,6 +28,18 @@ module Kernel
     Constraint.new(name: "Lambda(#{arity})", function: f)
   end
 
+  def NilOr(constraint = nil, &blk)
+    constraint = Maker.make_constraint(constraint, &blk)
+    f = -> { _1.nil? || constraint.(_1) }
+    Constraint.new(name: "NilOr(#{constraint})", function: f)
+  end
+
+  def Not(constraint = nil, &blk)
+    constraint = Maker.make_constraint(constraint, &blk)
+    f = -> { !constraint.(_1) }
+    Constraint.new(name: "Not(#{constraint})", function: f)
+  end
+
   def PairOf(fst, snd)
     fst_constraint = Maker.make_constraint(fst)
     snd_constraint = Maker.make_constraint(snd)

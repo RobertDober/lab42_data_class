@@ -1,16 +1,34 @@
 
 ## Context: Builtin Constraints
 
+
 Given some setup
 ```ruby
     require "lab42/data_class/builtin_constraints"
 
     let(:constraint_error) { Lab42::DataClass::ConstraintError }
 ```
+### Calling Convention
+
+At first please note that all Builtins that take _exactly_ one constraint
+as a paramter can also take a block, the block is registered as a constraint and
+**not** it's value
+
+Then surprisingly
+```ruby
+    bad_constraint = DataClass(:value).with_constraint(value: NilOr{Set.new(%w[x y z])})
+    expect{ bad_constraint.new(value: "a") }.not_to raise_error(constraint_error) # BUT SHOULD
+```
+
+But the following (useless complicated) works:
+```ruby
+    complicated_constraint = DataClass(:value).with_constraint(value: NilOr{ Set.new(%w[x y z]).member? _1 })
+    expect{ complicated_constraint.new(value: "a") }.to raise_error(constraint_error) # BUT SHOULD
+```
 
 ### Enumerable Constraints
 
-#### Context: `All?`
+#### Context: `All?(constraint)`
 
 > :warning: This might be costly
 
@@ -29,7 +47,7 @@ But beware of evens
       .to raise_error(constraint_error)
 ```
 
-#### Context: `Any?`
+#### Context: `Any?(constraint)`
 
 > :warning: This might be costly
 
@@ -112,7 +130,33 @@ But else
 
 NilOr resambles a `Maybe` type in which `Some` is not stated and `None` is replaced by `nil`.
 Therefore a `nil` value is valid and all other values are valid iff they satisfy the constraint.
-- `Option(constraint)` either nil or satisfies the constraint → `-> { _1.nil? || constraint.(_1) }`
+
+Given such a constraint
+```ruby
+    let(:maybe) { DataClass(number: nil).with_constraint(number: NilOr(Fixnum)) }
+```
+
+**N.B.** That constraints are checked against _default values_ and therefore the constraint `Fixnum` was not
+even applicable under this definition
+
+Then we get
+```ruby
+    expect(maybe.new.number).to be_nil
+    expect(maybe.new(number: 42).number).to eq(42)
+    expect{ maybe.new(number: false) }.to raise_error(constraint_error)
+```
+
+#### Context: `Not(constraint)`
+
+Not (pun intended) to say here
+
+And therefore
+```ruby
+    negator = DataClass(:consonant).with_constraint(consonant: Not(Set.new(%w[a e i o u])))
+    expect(negator.new(consonant: "b").consonant).to eq("b")
+    expect{ negator.new(consonant: "a") }.to raise_error(constraint_error)
+```
+
 - `Not(constraint)` negation of a constraint → `-> { !constraint.(_1) }`
 - `Choice(*constraints)` satisfies one of the constraints, again useful in v0.8 with `ListOf`, e.g. `ListOf(Choice(Symbol, String))` → `-> { |v| constraints.any?{ |c| c.(v) } }`
 - `Lambda(arity=-1)` a callable with the given arity → `-> { _1.respond_to?(:arity) && _1.arity == arity }`
