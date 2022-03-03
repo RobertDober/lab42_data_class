@@ -156,9 +156,24 @@ And therefore
     expect(negator.new(consonant: "b").consonant).to eq("b")
     expect{ negator.new(consonant: "a") }.to raise_error(constraint_error)
 ```
+#### Context: `Choice(*constraints)`
 
-- `Not(constraint)` negation of a constraint → `-> { !constraint.(_1) }`
-- `Choice(*constraints)` satisfies one of the constraints, again useful in v0.8 with `ListOf`, e.g. `ListOf(Choice(Symbol, String))` → `-> { |v| constraints.any?{ |c| c.(v) } }`
+Given a choice between Strings and Symbols as keys we might model as follows
+```ruby
+    let(:key_constraint) { Choice(String, Symbol) }
+    let(:entry) { DataClass(:value).with_constraint(value: PairOf(key_constraint, Anything)) }
+```
+
+Then the following holds:
+```ruby
+    entry.new(value: Pair("hello", "world"))
+    entry.new(value: Pair(:hello, 42))
+```
+
+But indeed:
+```ruby
+    expect{ entry.new(value: Pair(42, "hello")) }.to raise_error(constraint_error)
+```
 - `Lambda(arity=-1)` a callable with the given arity → `-> { _1.respond_to?(:arity) && _1.arity == arity }`
 
 ### String Constraints

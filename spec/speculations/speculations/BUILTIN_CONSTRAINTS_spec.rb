@@ -99,5 +99,18 @@ RSpec.describe "speculations/BUILTIN_CONSTRAINTS.md" do
         expect{ negator.new(consonant: "a") }.to raise_error(constraint_error)
       end
     end
+    # speculations/BUILTIN_CONSTRAINTS.md:159
+    context "`Choice(*constraints)`" do
+      # speculations/BUILTIN_CONSTRAINTS.md:162
+      let(:key_constraint) { Choice(String, Symbol) }
+      let(:entry) { DataClass(:value).with_constraint(value: PairOf(key_constraint, Anything)) }
+      it "the following holds: (speculations/BUILTIN_CONSTRAINTS.md:168)" do
+        entry.new(value: Pair("hello", "world"))
+        entry.new(value: Pair(:hello, 42))
+      end
+      it "indeed: (speculations/BUILTIN_CONSTRAINTS.md:174)" do
+        expect{ entry.new(value: Pair(42, "hello")) }.to raise_error(constraint_error)
+      end
+    end
   end
 end

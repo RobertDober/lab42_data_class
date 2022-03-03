@@ -21,6 +21,14 @@ module Kernel
     Constraint.new(name: "Any?(#{constraint})", function: f)
   end
 
+  def Choice(*constraints)
+    constraints = constraints.map{ Maker.make_constraint _1 }
+    f = ->(value) do
+      constraints.any?{ _1.(value) }
+    end
+    Constraint.new(name: "Choice(#{constraints.join(', ')})", function: f)
+  end
+
   def Lambda(arity)
     f = -> do
       _1.arity == arity rescue false
