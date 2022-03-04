@@ -1,9 +1,16 @@
 # frozen_string_literal: true
 
+require_relative '../nil'
 module Kernel
+  Nil = Lab42::Nil
+
   def DataClass(*args, **kwds, &blk)
     proxy = Lab42::DataClass::Proxy.new(*args, **kwds, &blk)
     proxy.define_class!
+  end
+
+  def List(*elements)
+    Lab42::List.new(*elements)
   end
 
   def Pair(first, second)

@@ -114,4 +114,13 @@ RSpec.describe "README.md" do
       end
     end
   end
+  # README.md:238
+  context "`List`" do
+    # README.md:243
+    let(:three) { List(*%w[a b c]) }
+    it "this becomes really a _linked_list_ (README.md:248)" do
+      expect(three.car).to eq("a")
+      expect(three.cdr).to eq(List(*%w[b c]))
+    end
+  end
 end
