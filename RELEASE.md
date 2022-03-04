@@ -1,3 +1,7 @@
+# v0.8.0 2022-03-??
+
+- Implement List class https://github.com/RobertDober/lab42_data_class/issues/20
+
 # v0.7.2 2022-03-03
 
 - Fixed warning on redefinition of derive method https://github.com/RobertDober/lab42_data_class/issues/17

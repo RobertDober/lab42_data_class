@@ -6,6 +6,8 @@ require_relative './data_class/kernel'
 require_relative './data_class/undefined_attribute_error'
 require_relative './data_class/validation_error'
 require_relative './data_class/proxy'
+require_relative './list'
+require_relative './nil'
 require_relative './pair'
 require_relative './triple'
 

@@ -84,6 +84,9 @@ Style/LambdaCall:
 Style/MixinGrouping:
   Enabled: false
 
+Style/ModuleFunction:
+  Enabled: false
+
 Style/RescueModifier:
   Enabled: false
 

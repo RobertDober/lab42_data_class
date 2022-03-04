@@ -235,6 +235,23 @@ And of course the factory functions are equivalent to the constructors
     expect(node).to eq(Lab42::Triple.new("42", 4, 2))
 ```
 
+## Context: `List`
+
+A `List` is what a _list_ is in Lisp or Elixir it exposes the following API
+
+Given such a _list_
+```ruby
+    let(:three) { List(*%w[a b c]) }
+```
+
+Then this becomes really a _linked_list_
+```ruby
+    expect(three.car).to eq("a")
+    expect(three.cdr).to eq(List(*%w[b c]))
+```
+
+For all details please consult the [List speculations](speculations/LIST.md)
+
 # LICENSE
 
 Copyright 2022 Robert Dober robert.dober@gmail.com
