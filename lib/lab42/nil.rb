@@ -2,9 +2,10 @@
 
 module Lab42
   module Nil
-    extend self
+    extend self, Enumerable
 
     def deconstruct = []
+    def each = self
     def empty? = true
     def length = 0
   end

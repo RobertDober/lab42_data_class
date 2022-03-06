@@ -69,6 +69,48 @@ And if not, beware
       .to raise_error(constraint_error)
 ```
 
+#### Context: `ListOf(constraint)`
+
+Not only is the constraint a convenient way to validate for linked lists and their contents but
+it generates special merge operations that can validate the constraint in `O(1)` runtime as the
+tail of the list does not change
+
+Given a `DataClass` with such a constraint
+```ruby
+    let(:evens) { DataClass(list: Nil, name: "myself").with_constraint(list: ListOf(:even?)) }
+```
+
+And we construct such a list (`O(n)` anyway):
+```ruby
+    let(:fours) { evens.new(list: List(*(1..3).map{ _1 * 4 })) }
+```
+
+Then we can just add a new element to such a list
+```ruby
+    with_0 = fours.set(:list).cons(0)
+    expect(with_0.list.car).to eq(0)
+    expect(with_0.list.cadr).to eq(4)
+    expect(with_0.list.caddr).to eq(8)
+```
+
+Or we can remove it
+```ruby
+    without_4 = fours.set(:list).cdr
+    expect(without_4.list.car).to eq(8)
+    expect(without_4.list.cadr).to eq(12)
+    expect(without_4.list.cddr).to eq(Nil)
+```
+
+But we cannot call the setter for a different attribute
+```ruby
+    expect do
+      fours.set(:name)
+    end
+      .to raise_error(Lab42::DataClass::UndefinedSetterError)
+    
+```
+
+
 #### Context: `PairOf(fst, snd)`
 
 When defining constraints on our special classes we can dig deeper

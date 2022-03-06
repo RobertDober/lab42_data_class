@@ -160,6 +160,7 @@ module Lab42
         klass.module_eval(&_define_access)
         klass.module_eval(&_define_to_h)
         klass.module_eval(&_define_merge)
+        klass.module_eval(&_define_set)
       end
 
       def _define_singleton_methods(singleton)
@@ -194,6 +195,18 @@ module Lab42
         ->(*) do
           define_method :to_proc do
             ->(other) { self === other }
+          end
+        end
+      end
+
+      def _define_set
+        proxy = self
+        ->(*) do
+          define_method :set do |attribute|
+            setter_constraint = proxy.setter_attributes.fetch(attribute) do
+              raise UndefinedSetterError, "There is no constraint implementing a setter for attribute #{attribute}"
+            end
+            setter_constraint.setter_for(attribute:, instance: self)
           end
         end
       end

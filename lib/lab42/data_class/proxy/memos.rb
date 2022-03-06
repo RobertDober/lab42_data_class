@@ -38,6 +38,8 @@ module Lab42
           @__validations__ ||= []
         end
 
+        def setter_attributes = @__setter_attributes__ ||= {}
+
         private
 
         def _missing_initializers

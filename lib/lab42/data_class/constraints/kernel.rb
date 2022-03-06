@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module Kernel
-  Constraint = Lab42::DataClass::Constraint
+  Constraints = Lab42::DataClass::Constraints
+  Constraint = Constraints::Constraint
+  ListOfConstraint = Constraints::ListOfConstraint
+
   Maker = Lab42::DataClass::Proxy::Constraints::Maker # TODO: Move Maker to Lab42::DataClass:ConstraintMaker
   Anything = Constraint.new(name: "Anything", function: ->(_) { true })
   Boolean = Constraint.new(name: "Boolean", function: -> { [false, true].member?(_1) })
@@ -41,10 +44,19 @@ module Kernel
   end
 
   def Lambda(arity)
-    f = -> do
+    function = -> do
       _1.arity == arity rescue false
     end
-    Constraint.new(name: "Lambda(#{arity})", function: f)
+    Constraint.new(name: "Lambda(#{arity})", function:)
+  end
+
+  def ListOf(constraint, &blk)
+    constraint = Maker.make_constraint(constraint, &blk)
+    function = -> do
+      (Lab42::List === _1 || Lab42::Nil == _1) &&
+      _1.all?(&constraint)
+    end
+    ListOfConstraint.new(name: "ListOf(#{constraint})", constraint:, function:)
   end
 
   def NilOr(constraint = nil, &blk)

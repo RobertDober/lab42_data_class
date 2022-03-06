@@ -23,7 +23,7 @@ However a some very quick guidelines
 - `List` is immutable and thusly _thread safe_
 
 - `List` paired with the `ListOf` constraint creates an efficient way
-to update list attributes in `DataClass` instances with `O(1)` constraint validation (unless you use `merge(list: ...)`
+to update list attributes in `DataClass` instances with `O(0)` constraint validation (unless you use `merge(list: ...)`
 
 As a résumé, when your use case is similar to a stack
 
