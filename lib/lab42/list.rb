@@ -13,6 +13,16 @@ module Lab42
         car == other.car &&
         cdr == other.cdr
 
+    def cadr = cdr.car
+
+    def caddr = cdr.cdr.car
+
+    def cddr = cdr.cdr
+
+    def cdddr = cdr.cdr.cdr
+
+    def cons(new_head) = self.class.cons(new_head, self)
+
     def deconstruct = [car, cdr]
 
     def each(&blk) = self.class.each(self, &blk)

@@ -19,26 +19,26 @@ RSpec.describe "speculations/BUILTIN_CONSTRAINTS.md" do
       complicated_constraint = DataClass(:value).with_constraint(value: NilOr{ Set.new(%w[x y z]).member? _1 })
       expect{ complicated_constraint.new(value: "a") }.to raise_error(constraint_error) # BUT SHOULD
     end
-    # speculations/BUILTIN_CONSTRAINTS.md:201
+    # speculations/BUILTIN_CONSTRAINTS.md:234
     context "String Constraints" do
-      # speculations/BUILTIN_CONSTRAINTS.md:204
+      # speculations/BUILTIN_CONSTRAINTS.md:237
       let(:starts) { StartsWith("<") }
       let(:ends)   { EndsWith(">") }
       let(:container) { Contains("div") }
-      it "we can check (speculations/BUILTIN_CONSTRAINTS.md:211)" do
+      it "we can check (speculations/BUILTIN_CONSTRAINTS.md:244)" do
         expect(starts.("<hello")).to be_truthy
         expect(starts.("<")).to be_truthy
         expect(starts.(" ")).to be_falsy
         expect(starts.("")).to be_falsy
         expect(starts.(" <@")).to be_falsy
       end
-      it "also (speculations/BUILTIN_CONSTRAINTS.md:220)" do
+      it "also (speculations/BUILTIN_CONSTRAINTS.md:253)" do
         expect(ends.(">")).to be_truthy
         expect(ends.("<hello>")).to be_truthy
         expect(ends.("")).to be_falsy
         expect(ends.("> ")).to be_falsy
       end
-      it "eventually (speculations/BUILTIN_CONSTRAINTS.md:228)" do
+      it "eventually (speculations/BUILTIN_CONSTRAINTS.md:261)" do
         expect(container.("div")).to be_truthy
         expect(container.("some <div>")).to be_truthy
         expect(container.("some <dv>")).to be_falsy
@@ -69,13 +69,32 @@ RSpec.describe "speculations/BUILTIN_CONSTRAINTS.md" do
         end
       end
       # speculations/BUILTIN_CONSTRAINTS.md:72
+      context "`ListOf(constraint)`" do
+        # speculations/BUILTIN_CONSTRAINTS.md:79
+        let(:evens) { DataClass(list: Nil).with_constraint(list: ListOf(:even?)) }
+        # speculations/BUILTIN_CONSTRAINTS.md:84
+        let(:fours) { evens.new(list: List(*(1..3).map{ _1 * 4 })) }
+        it "we can just add a new element to such a list (speculations/BUILTIN_CONSTRAINTS.md:89)" do
+          with_0 = fours.set(:list).cons(0)
+          expect(with_0.list.car).to eq(0)
+          expect(with_0.list.cadr).to eq(4)
+          expect(with_0.list.caddr).to eq(8)
+        end
+        it "we can remove it (speculations/BUILTIN_CONSTRAINTS.md:97)" do
+          without_4 = fours.set(:list).cdr
+          expect(without_4.list.car).to eq(8)
+          expect(without_4.list.cadr).to eq(12)
+          expect(without_4.list.cddr).to eq(Nil)
+        end
+      end
+      # speculations/BUILTIN_CONSTRAINTS.md:105
       context "`PairOf(fst, snd)`" do
-        # speculations/BUILTIN_CONSTRAINTS.md:77
+        # speculations/BUILTIN_CONSTRAINTS.md:110
         let(:my_pair){ DataClass(:pair).with_constraint(pair: PairOf(Symbol, [:>, 0])) }
-        it "let us comply with that (speculations/BUILTIN_CONSTRAINTS.md:82)" do
+        it "let us comply with that (speculations/BUILTIN_CONSTRAINTS.md:115)" do
           expect(my_pair.new(pair: Pair(:alpha, 42)).pair.second).to eq(42)
         end
-        it "there are multiple ways to violate this contract (speculations/BUILTIN_CONSTRAINTS.md:87)" do
+        it "there are multiple ways to violate this contract (speculations/BUILTIN_CONSTRAINTS.md:120)" do
           not_a_pair = Triple(:hello, 42, 42)
           not_a_sym = Pair("hello", 1)
           not_positive = Pair(:hello, 0)
@@ -86,14 +105,14 @@ RSpec.describe "speculations/BUILTIN_CONSTRAINTS.md" do
           end
         end
       end
-      # speculations/BUILTIN_CONSTRAINTS.md:98
+      # speculations/BUILTIN_CONSTRAINTS.md:131
       context "`TripleOf(fst, snd, trd)`" do
-        # speculations/BUILTIN_CONSTRAINTS.md:103
+        # speculations/BUILTIN_CONSTRAINTS.md:136
         let(:my_triple) { DataClass(:triple).with_constraint(triple: TripleOf(String, String, String)) }
-        it "strings it shall be (speculations/BUILTIN_CONSTRAINTS.md:108)" do
+        it "strings it shall be (speculations/BUILTIN_CONSTRAINTS.md:141)" do
           expect{ my_triple.new(triple: Triple("a", "b", "c")) }.not_to raise_error
         end
-        it "else (speculations/BUILTIN_CONSTRAINTS.md:113)" do
+        it "else (speculations/BUILTIN_CONSTRAINTS.md:146)" do
           [
           Triple("a", "b", 3),
           Triple("a", 2, "c"),
@@ -106,40 +125,40 @@ RSpec.describe "speculations/BUILTIN_CONSTRAINTS.md" do
 
         end
       end
-      # speculations/BUILTIN_CONSTRAINTS.md:129
+      # speculations/BUILTIN_CONSTRAINTS.md:162
       context "NilOr(constraint)" do
-        # speculations/BUILTIN_CONSTRAINTS.md:135
+        # speculations/BUILTIN_CONSTRAINTS.md:168
         let(:maybe) { DataClass(number: nil).with_constraint(number: NilOr(Fixnum)) }
-        it "we get (speculations/BUILTIN_CONSTRAINTS.md:143)" do
+        it "we get (speculations/BUILTIN_CONSTRAINTS.md:176)" do
           expect(maybe.new.number).to be_nil
           expect(maybe.new(number: 42).number).to eq(42)
           expect{ maybe.new(number: false) }.to raise_error(constraint_error)
         end
       end
-      # speculations/BUILTIN_CONSTRAINTS.md:149
+      # speculations/BUILTIN_CONSTRAINTS.md:182
       context "`Not(constraint)`" do
-        it "therefore (speculations/BUILTIN_CONSTRAINTS.md:154)" do
+        it "therefore (speculations/BUILTIN_CONSTRAINTS.md:187)" do
           negator = DataClass(:consonant).with_constraint(consonant: Not(Set.new(%w[a e i o u])))
           expect(negator.new(consonant: "b").consonant).to eq("b")
           expect{ negator.new(consonant: "a") }.to raise_error(constraint_error)
         end
       end
-      # speculations/BUILTIN_CONSTRAINTS.md:159
+      # speculations/BUILTIN_CONSTRAINTS.md:192
       context "`Choice(*constraints)`" do
-        # speculations/BUILTIN_CONSTRAINTS.md:162
+        # speculations/BUILTIN_CONSTRAINTS.md:195
         let(:key_constraint) { Choice(String, Symbol) }
         let(:entry) { DataClass(:value).with_constraint(value: PairOf(key_constraint, Anything)) }
-        it "the following holds: (speculations/BUILTIN_CONSTRAINTS.md:168)" do
+        it "the following holds: (speculations/BUILTIN_CONSTRAINTS.md:201)" do
           entry.new(value: Pair("hello", "world"))
           entry.new(value: Pair(:hello, 42))
         end
-        it "indeed: (speculations/BUILTIN_CONSTRAINTS.md:174)" do
+        it "indeed: (speculations/BUILTIN_CONSTRAINTS.md:207)" do
           expect{ entry.new(value: Pair(42, "hello")) }.to raise_error(constraint_error)
         end
       end
-      # speculations/BUILTIN_CONSTRAINTS.md:178
+      # speculations/BUILTIN_CONSTRAINTS.md:211
       context "`Lambda(arity)`" do
-        it "we see that the following callables are compliant (speculations/BUILTIN_CONSTRAINTS.md:183)" do
+        it "we see that the following callables are compliant (speculations/BUILTIN_CONSTRAINTS.md:216)" do
           callable1 = Lambda(1)
           compliants = [
           -> { _1 },
@@ -157,18 +176,18 @@ RSpec.describe "speculations/BUILTIN_CONSTRAINTS.md" do
           end
         end
       end
-      # speculations/BUILTIN_CONSTRAINTS.md:238
+      # speculations/BUILTIN_CONSTRAINTS.md:271
       context "`Anything`" do
-        it "we see (speculations/BUILTIN_CONSTRAINTS.md:243)" do
+        it "we see (speculations/BUILTIN_CONSTRAINTS.md:276)" do
           expect(Anything.(nil)).to eq(true)
           expect(Anything.(42)).to eq(true)
           expect(Anything.(BasicObject.new)).to eq(true)
           expect(Anything.(self)).to eq(true)
         end
       end
-      # speculations/BUILTIN_CONSTRAINTS.md:250
+      # speculations/BUILTIN_CONSTRAINTS.md:283
       context "`Boolean` " do
-        it "it is true for exactly two values (speculations/BUILTIN_CONSTRAINTS.md:255)" do
+        it "it is true for exactly two values (speculations/BUILTIN_CONSTRAINTS.md:288)" do
           expect(Boolean.(true)).to eq(true)
           expect(Boolean.(false)).to eq(true)
           expect(Boolean.(nil)).to eq(false)

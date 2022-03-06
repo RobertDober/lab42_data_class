@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require_relative "constraint"
+require_relative "constraints/constraint"
+require_relative "constraints/list_of_constraint"
 require_relative "constraints/kernel"
 
 module Lab42

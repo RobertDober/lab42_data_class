@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "lab42/data_class/constraint"
+require "lab42/data_class/constraints/constraint"
 module Lab42
   module DataClass
     class Proxy
@@ -18,7 +18,7 @@ module Lab42
 
           def _make_constraint(constraint)
             case constraint
-            when Lab42::DataClass::Constraint, Proc, Method
+            when Lab42::DataClass::Constraints::Constraint, Proc, Method
               constraint
             when Symbol
               -> { _1.send(constraint) }

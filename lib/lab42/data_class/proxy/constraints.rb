@@ -12,19 +12,8 @@ module Lab42
           raise ConstraintError, errors.join("\n\n") unless errors.empty?
         end
 
-        def define_constraint
-          ->((attr, constraint)) do
-            if members!.member?(attr)
-              constraints[attr] << Maker.make_constraint(constraint)
-              nil
-            else
-              attr
-            end
-          end
-        end
-
         def define_constraints(constraints)
-          errors = constraints.map(&define_constraint).compact
+          errors = constraints.map(&_define_constraint).compact
           unless errors.empty?
             raise UndefinedAttributeError,
                   "constraints cannot be defined for undefined attributes #{errors.inspect}"
@@ -74,6 +63,19 @@ module Lab42
           raise ConstraintError, errors.join("\n\n") unless errors.empty?
         end
 
+        def _define_constraint
+          ->((attr, constraint)) do
+            if members!.member?(attr)
+              constraint = Maker.make_constraint(constraint)
+              _maybe_define_setter_constraint(attr, constraint)
+              constraints[attr] << constraint
+              nil
+            else
+              attr
+            end
+          end
+        end
+
         def _define_with_constraint
           proxy = self
           ->(*) do
@@ -81,6 +83,12 @@ module Lab42
               proxy.define_constraints(constraints)
               self
             end
+          end
+        end
+
+        def _maybe_define_setter_constraint(attr, constraint)
+          if Constraint === constraint && constraint.setter_constraint?
+            setter_attributes.update(attr => constraint)
           end
         end
       end
