@@ -2,6 +2,8 @@
 
 require_relative "constraints/constraint"
 require_relative "constraints/list_of_constraint"
+require_relative "constraints/pair_of_constraint"
+require_relative "constraints/triple_of_constraint"
 require_relative "constraints/kernel"
 
 module Lab42

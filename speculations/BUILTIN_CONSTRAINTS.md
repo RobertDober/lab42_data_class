@@ -75,9 +75,17 @@ Not only is the constraint a convenient way to validate for linked lists and the
 it generates special merge operations that can validate the constraint in `O(1)` runtime as the
 tail of the list does not change
 
+<<<<<<< HEAD
 Given a `DataClass` with such a constraint
 ```ruby
     let(:evens) { DataClass(list: Nil, name: "myself").with_constraint(list: ListOf(:even?)) }
+=======
+For details see [here](ATTRIBUTE_SETTING_CONSTRAINTS.md)
+
+Given a `DataClass` with such a constraint
+```ruby
+    let(:evens) { DataClass(list: Nil).with_constraint(list: ListOf(:even?)) }
+>>>>>>> db85dfe (I021 list of constraint (#27))
 ```
 
 And we construct such a list (`O(n)` anyway):
@@ -85,6 +93,7 @@ And we construct such a list (`O(n)` anyway):
     let(:fours) { evens.new(list: List(*(1..3).map{ _1 * 4 })) }
 ```
 
+<<<<<<< HEAD
 Then we can just add a new element to such a list
 ```ruby
     with_0 = fours.set(:list).cons(0)
@@ -108,6 +117,23 @@ But we cannot call the setter for a different attribute
     end
       .to raise_error(Lab42::DataClass::UndefinedSetterError)
     
+=======
+But a list with an odd will just not do
+```ruby
+    expect do
+      evens.new(list: List(*0..2))
+    end
+      .to raise_error(constraint_error)
+```
+
+And nor will an array
+
+```ruby
+    expect do
+      evens.new(list: [0, 2])
+    end
+      .to raise_error(constraint_error)
+>>>>>>> db85dfe (I021 list of constraint (#27))
 ```
 
 
@@ -137,6 +163,8 @@ But there are multiple ways to violate this contract
     end
 ```
 
+For the Attribute Setting Constraints see [here](ATTRIBUTE_SETTING_CONSTRAINTS.md)
+
 #### Context: `TripleOf(fst, snd, trd)`
 
 Nothing new going on here
@@ -164,7 +192,8 @@ But else
 
 
 ```
-- `TripleOf(fst, snd, trd)` → `-> { Triple === _1 && fst.(_1.first) && snd.(_1.second) && trd.(_1.third) }`
+
+For the Attribute Setting Constraints see [here](ATTRIBUTE_SETTING_CONSTRAINTS.md)
 
 ### High Order Constraints
 

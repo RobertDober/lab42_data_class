@@ -63,9 +63,9 @@ RSpec.describe "speculations/DATA_CLASSES.md" do
       end
     end
   end
-  # speculations/DATA_CLASSES.md:113
+  # speculations/DATA_CLASSES.md:138
   context "Defaults" do
-    # speculations/DATA_CLASSES.md:118
+    # speculations/DATA_CLASSES.md:143
     module WithAgeAndName
     extend Lab42::DataClass
 
@@ -73,7 +73,7 @@ RSpec.describe "speculations/DATA_CLASSES.md" do
     constraint :name, String
     constraint :age, [:>=, 0]
     end
-    # speculations/DATA_CLASSES.md:129
+    # speculations/DATA_CLASSES.md:154
     class BetterDog
     include WithAgeAndName
     extend Lab42::DataClass
@@ -86,32 +86,32 @@ RSpec.describe "speculations/DATA_CLASSES.md" do
 
     constraint :breed, Set.new(AllowedBreeds)
     end
-    it "construction can use the defaults now (speculations/DATA_CLASSES.md:145)" do
+    it "construction can use the defaults now (speculations/DATA_CLASSES.md:170)" do
       expect(BetterDog.new(age: 18, name: "Vilma").to_h)
       .to eq(name: "Vilma", age: 18, breed: "Labrador")
     end
-    it "is object to the constraints of the included module (speculations/DATA_CLASSES.md:151)" do
+    it "is object to the constraints of the included module (speculations/DATA_CLASSES.md:176)" do
       expect do
       BetterDog.new(age: 18, name: :Vilma)
       end
       .to raise_error(constraint_error, "value :Vilma is not allowed for attribute :name")
     end
-    it "of the constraints of the base class too (speculations/DATA_CLASSES.md:159)" do
+    it "of the constraints of the base class too (speculations/DATA_CLASSES.md:184)" do
       expect do
       BetterDog.new(age: 18, name: "Vilma", breed: "Pug")
       end
       .to raise_error(constraint_error, %{value "Pug" is not allowed for attribute :breed})
     end
   end
-  # speculations/DATA_CLASSES.md:166
+  # speculations/DATA_CLASSES.md:191
   context "Derived Attributes" do
-    # speculations/DATA_CLASSES.md:173
+    # speculations/DATA_CLASSES.md:198
     module Token
     extend Lab42::DataClass
 
     attributes :line, :content, lnb: 0
     end
-    # speculations/DATA_CLASSES.md:182
+    # speculations/DATA_CLASSES.md:207
     class HeaderToken
     include Token
     extend Lab42::DataClass
@@ -124,14 +124,14 @@ RSpec.describe "speculations/DATA_CLASSES.md" do
     _1.line[/^\s*\#+\s*/].strip.length
     end
     end
-    it "we can observe how _defaults_ and _derivations_ provide us with the final object (speculations/DATA_CLASSES.md:198)" do
+    it "we can observe how _defaults_ and _derivations_ provide us with the final object (speculations/DATA_CLASSES.md:223)" do
       expect(HeaderToken.new(line: "# Hello").to_h)
       .to eq(line: "# Hello", content: "Hello", lnb: 0, level: 1)
     end
   end
-  # speculations/DATA_CLASSES.md:203
+  # speculations/DATA_CLASSES.md:228
   context "Validation" do
-    # speculations/DATA_CLASSES.md:212
+    # speculations/DATA_CLASSES.md:237
     let(:validation_error) { Lab42::DataClass::ValidationError }
     class Person
     extend Lab42::DataClass
@@ -142,22 +142,22 @@ RSpec.describe "speculations/DATA_CLASSES.md" do
     _1.age >= 18 || !_1.member
     end
     end
-    it "we can assure that all members are at least 18 years old (speculations/DATA_CLASSES.md:226)" do
+    it "we can assure that all members are at least 18 years old (speculations/DATA_CLASSES.md:251)" do
       expect do
       Person.new(name: "junior", age: 17, member: true)
       end
       .to raise_error(validation_error)
     end
-    it "of course validation is also carried out when new instances are derived (speculations/DATA_CLASSES.md:234)" do
+    it "of course validation is also carried out when new instances are derived (speculations/DATA_CLASSES.md:259)" do
       senior = Person.new(name: "senior", age: 42, member: true)
       expect do
       senior.merge(name: "offspring", age: 10)
       end
       .to raise_error(validation_error)
     end
-    # speculations/DATA_CLASSES.md:242
+    # speculations/DATA_CLASSES.md:267
     context "Validation, a code smell?" do
-      # speculations/DATA_CLASSES.md:248
+      # speculations/DATA_CLASSES.md:273
       module Person1
       extend Lab42::DataClass
 
@@ -179,7 +179,7 @@ RSpec.describe "speculations/DATA_CLASSES.md" do
       constraint :age, [:<, 18]
       derive(:member){ false }
       end
-      it "it also works _better_ in the way that we cannot _merge_ an `Adult` into a `Child` (speculations/DATA_CLASSES.md:275)" do
+      it "it also works _better_ in the way that we cannot _merge_ an `Adult` into a `Child` (speculations/DATA_CLASSES.md:300)" do
         expect{ Adult.new(name: "senior", age: 18, member: true) }
         .not_to raise_error
 
@@ -187,11 +187,11 @@ RSpec.describe "speculations/DATA_CLASSES.md" do
       end
     end
   end
-  # speculations/DATA_CLASSES.md:283
+  # speculations/DATA_CLASSES.md:308
   context "Error Handling" do
-    # speculations/DATA_CLASSES.md:288
+    # speculations/DATA_CLASSES.md:313
     let(:duplicate_definition_error) { Lab42::DataClass::DuplicateDefinitionError }
-    it "we must not define the same operation twice (speculations/DATA_CLASSES.md:294)" do
+    it "we must not define the same operation twice (speculations/DATA_CLASSES.md:319)" do
       expect do
       Class.new do
       extend Lab42::DataClass

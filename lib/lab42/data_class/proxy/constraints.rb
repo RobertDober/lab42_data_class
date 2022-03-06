@@ -87,7 +87,7 @@ module Lab42
         end
 
         def _maybe_define_setter_constraint(attr, constraint)
-          if Constraint === constraint && constraint.setter_constraint?
+          if Lab42::DataClass::Constraints::Constraint === constraint && constraint.setter_constraint?
             setter_attributes.update(attr => constraint)
           end
         end

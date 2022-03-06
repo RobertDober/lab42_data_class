@@ -112,13 +112,36 @@ RSpec.describe "README.md" do
         expect(token).to eq(Lab42::Pair.new("12", 12))
         expect(node).to eq(Lab42::Triple.new("42", 4, 2))
       end
+      # README.md:238
+      context "Pseudo Assignments" do
+        # README.md:243
+        let(:original) { Pair(1, 1) }
+        # README.md:248
+        let(:xyz) { Triple(1, 1, 1) }
+        it " (README.md:253)" do
+          second = original.set_first(2)
+          third  = second.set_second(2)
+          expect(original).to eq( Pair(1, 1) )
+          expect(second).to eq(Pair(2, 1))
+          expect(third).to eq(Pair(2, 2))
+        end
+        it "also (README.md:262)" do
+          second = xyz.set_first(2)
+          third  = second.set_second(2)
+          fourth = third.set_third(2)
+          expect(xyz).to eq(Triple(1, 1, 1))
+          expect(second).to eq(Triple(2, 1, 1))
+          expect(third).to eq(Triple(2, 2, 1))
+          expect(fourth).to eq(Triple(2, 2, 2))
+        end
+      end
     end
   end
-  # README.md:238
+  # README.md:272
   context "`List`" do
-    # README.md:243
+    # README.md:277
     let(:three) { List(*%w[a b c]) }
-    it "this becomes really a _linked_list_ (README.md:248)" do
+    it "this becomes really a _linked_list_ (README.md:282)" do
       expect(three.car).to eq("a")
       expect(three.cdr).to eq(List(*%w[b c]))
     end

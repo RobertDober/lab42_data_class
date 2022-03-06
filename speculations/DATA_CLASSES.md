@@ -110,6 +110,31 @@ Then these constraints are well observed
       .to raise_error(Lab42::DataClass::ConstraintError)
 ```
 
+#### Attribute Setting Constraints
+
+These are special _builtin constraints_ that allow to set attributes in a very specific, controlled way such as
+that the constraint on the attribute needs only be partially checked.
+
+A good example is the `ListOf` constraint.
+
+If an attribute has the `ListOf` constraint then its dataclass instance gets a special `set` method
+that allows to create a new dataclass instance in which only the change in the attribute and not the whole attribute needs
+to be constraint checked.
+
+Therefore we can still
+
+```ruby
+      some_instance.merge(list: some_instance.list.cons(1)) # Bad O(n)
+```
+
+or better
+
+```ruby
+      some_instance.set(:list).cons(1) # Goof O(1)
+```
+
+These special Constraints are described in detail [here](speculations/ATTRIBUTE_SETTING_CONSTRAINTS.md)
+
 ### Context: Defaults
 
 Let us fix the code smell and introduce _default values for attributes_ at the same time
