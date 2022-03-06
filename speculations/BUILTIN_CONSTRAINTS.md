@@ -75,17 +75,9 @@ Not only is the constraint a convenient way to validate for linked lists and the
 it generates special merge operations that can validate the constraint in `O(1)` runtime as the
 tail of the list does not change
 
-<<<<<<< HEAD
 Given a `DataClass` with such a constraint
 ```ruby
     let(:evens) { DataClass(list: Nil, name: "myself").with_constraint(list: ListOf(:even?)) }
-=======
-For details see [here](ATTRIBUTE_SETTING_CONSTRAINTS.md)
-
-Given a `DataClass` with such a constraint
-```ruby
-    let(:evens) { DataClass(list: Nil).with_constraint(list: ListOf(:even?)) }
->>>>>>> db85dfe (I021 list of constraint (#27))
 ```
 
 And we construct such a list (`O(n)` anyway):
@@ -93,7 +85,6 @@ And we construct such a list (`O(n)` anyway):
     let(:fours) { evens.new(list: List(*(1..3).map{ _1 * 4 })) }
 ```
 
-<<<<<<< HEAD
 Then we can just add a new element to such a list
 ```ruby
     with_0 = fours.set(:list).cons(0)
@@ -116,8 +107,8 @@ But we cannot call the setter for a different attribute
       fours.set(:name)
     end
       .to raise_error(Lab42::DataClass::UndefinedSetterError)
-    
-=======
+```
+
 But a list with an odd will just not do
 ```ruby
     expect do
@@ -133,7 +124,6 @@ And nor will an array
       evens.new(list: [0, 2])
     end
       .to raise_error(constraint_error)
->>>>>>> db85dfe (I021 list of constraint (#27))
 ```
 
 
@@ -318,7 +308,7 @@ And we see
     expect(Anything.(self)).to eq(true)
 ```
 
-#### Context: `Boolean` 
+#### Context: `Boolean`
 
 As we do not have such a type in Ruby this constraint is quite useful
 
@@ -330,6 +320,6 @@ And it is true for exactly two values
     expect(Boolean.(42)).to eq(false)
     expect(Boolean.([])).to eq(false)
     expect(Boolean.([false])).to eq(false)
-    
+
 ```
 <!--SPDX-License-Identifier: Apache-2.0-->
