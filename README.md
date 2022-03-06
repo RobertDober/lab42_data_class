@@ -235,6 +235,40 @@ And of course the factory functions are equivalent to the constructors
     expect(node).to eq(Lab42::Triple.new("42", 4, 2))
 ```
 
+#### Context: Pseudo Assignments
+
+... in reality return a new object
+
+Given an instance of `Pair`
+```ruby
+    let(:original) { Pair(1, 1) }
+```
+
+And one of `Triple`
+```ruby
+    let(:xyz) { Triple(1, 1, 1) }
+```
+
+Then
+```ruby
+    second = original.set_first(2)
+    third  = second.set_second(2)
+    expect(original).to eq( Pair(1, 1) )
+    expect(second).to eq(Pair(2, 1))
+    expect(third).to eq(Pair(2, 2))
+```
+
+And also
+```ruby
+    second = xyz.set_first(2)
+    third  = second.set_second(2)
+    fourth = third.set_third(2)
+    expect(xyz).to eq(Triple(1, 1, 1))
+    expect(second).to eq(Triple(2, 1, 1))
+    expect(third).to eq(Triple(2, 2, 1))
+    expect(fourth).to eq(Triple(2, 2, 2))
+```
+
 ## Context: `List`
 
 A `List` is what a _list_ is in Lisp or Elixir it exposes the following API

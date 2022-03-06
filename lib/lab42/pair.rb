@@ -10,6 +10,9 @@ module Lab42
       [first, second]
     end
 
+    def set_first(new_first) = self.class.new(new_first, second)
+    def set_second(new_second) = self.class.new(first, new_second)
+
     private
 
     def initialize(first, second)

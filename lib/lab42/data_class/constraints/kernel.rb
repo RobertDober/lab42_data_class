@@ -4,6 +4,8 @@ module Kernel
   Constraints = Lab42::DataClass::Constraints
   Constraint = Constraints::Constraint
   ListOfConstraint = Constraints::ListOfConstraint
+  PairOfConstraint = Constraints::PairOfConstraint
+  TripleOfConstraint = Constraints::TripleOfConstraint
 
   Maker = Lab42::DataClass::Proxy::Constraints::Maker # TODO: Move Maker to Lab42::DataClass:ConstraintMaker
   Anything = Constraint.new(name: "Anything", function: ->(_) { true })
@@ -74,10 +76,11 @@ module Kernel
   def PairOf(fst, snd)
     fst_constraint = Maker.make_constraint(fst)
     snd_constraint = Maker.make_constraint(snd)
+    constraint = [fst_constraint, snd_constraint]
     f = -> do
       Lab42::Pair === _1 && fst_constraint.(_1.first) && snd_constraint.(_1.second)
     end
-    Constraint.new(name: "PairOf(#{fst_constraint}, #{snd_constraint})", function: f)
+    PairOfConstraint.new(name: "PairOf(#{fst_constraint}, #{snd_constraint})", function: f, constraint:)
   end
 
   def StartsWith(str)
@@ -89,10 +92,15 @@ module Kernel
     fst_constraint = Maker.make_constraint(fst)
     snd_constraint = Maker.make_constraint(snd)
     trd_constraint = Maker.make_constraint(trd)
+    constraint = [fst_constraint, snd_constraint, trd_constraint]
     f = -> do
       Lab42::Triple === _1 && fst_constraint.(_1.first) && snd_constraint.(_1.second) && trd_constraint.(_1.third)
     end
-    Constraint.new(name: "TripleOf(#{fst_constraint}, #{snd_constraint}, #{trd_constraint})", function: f)
+    TripleOfConstraint.new(
+      name: "TripleOf(#{fst_constraint}, #{snd_constraint}, #{trd_constraint})",
+      function: f,
+      constraint:
+    )
   end
 end
 # SPDX-License-Identifier: Apache-2.0

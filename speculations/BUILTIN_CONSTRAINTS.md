@@ -107,7 +107,23 @@ But we cannot call the setter for a different attribute
       fours.set(:name)
     end
       .to raise_error(Lab42::DataClass::UndefinedSetterError)
-    
+```
+
+But a list with an odd will just not do
+```ruby
+    expect do
+      evens.new(list: List(*0..2))
+    end
+      .to raise_error(constraint_error)
+```
+
+And nor will an array
+
+```ruby
+    expect do
+      evens.new(list: [0, 2])
+    end
+      .to raise_error(constraint_error)
 ```
 
 
@@ -137,6 +153,8 @@ But there are multiple ways to violate this contract
     end
 ```
 
+For the Attribute Setting Constraints see [here](ATTRIBUTE_SETTING_CONSTRAINTS.md)
+
 #### Context: `TripleOf(fst, snd, trd)`
 
 Nothing new going on here
@@ -164,7 +182,8 @@ But else
 
 
 ```
-- `TripleOf(fst, snd, trd)` → `-> { Triple === _1 && fst.(_1.first) && snd.(_1.second) && trd.(_1.third) }`
+
+For the Attribute Setting Constraints see [here](ATTRIBUTE_SETTING_CONSTRAINTS.md)
 
 ### High Order Constraints
 
@@ -289,7 +308,7 @@ And we see
     expect(Anything.(self)).to eq(true)
 ```
 
-#### Context: `Boolean` 
+#### Context: `Boolean`
 
 As we do not have such a type in Ruby this constraint is quite useful
 
@@ -301,6 +320,6 @@ And it is true for exactly two values
     expect(Boolean.(42)).to eq(false)
     expect(Boolean.([])).to eq(false)
     expect(Boolean.([false])).to eq(false)
-    
+
 ```
 <!--SPDX-License-Identifier: Apache-2.0-->

@@ -1,4 +1,6 @@
-# v0.8.0 2022-03-??
+# v0.8.0 2022-03-06
+
+- Implement `PairOf` and `TripleOf` constraint  https://github.com/RobertDober/lab42_data_class/issues/22
 
 - Implement `ListOf` constraint  https://github.com/RobertDober/lab42_data_class/issues/21
 
