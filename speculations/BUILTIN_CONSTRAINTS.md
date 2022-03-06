@@ -77,7 +77,7 @@ tail of the list does not change
 
 Given a `DataClass` with such a constraint
 ```ruby
-    let(:evens) { DataClass(list: Nil).with_constraint(list: ListOf(:even?)) }
+    let(:evens) { DataClass(list: Nil, name: "myself").with_constraint(list: ListOf(:even?)) }
 ```
 
 And we construct such a list (`O(n)` anyway):
@@ -99,6 +99,15 @@ Or we can remove it
     expect(without_4.list.car).to eq(8)
     expect(without_4.list.cadr).to eq(12)
     expect(without_4.list.cddr).to eq(Nil)
+```
+
+But we cannot call the setter for a different attribute
+```ruby
+    expect do
+      fours.set(:name)
+    end
+      .to raise_error(Lab42::DataClass::UndefinedSetterError)
+    
 ```
 
 
