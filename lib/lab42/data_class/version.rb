@@ -2,7 +2,7 @@
 
 module Lab42
   module DataClass
-    VERSION = "0.8.2"
+    VERSION = "0.8.3"
   end
 end
 #  SPDX-License-Identifier: Apache-2.0

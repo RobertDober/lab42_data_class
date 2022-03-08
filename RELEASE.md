@@ -1,3 +1,7 @@
+# v0.8.3 2022-03-08
+
+- Fix cons on Nil error https://github.com/RobertDober/lab42_data_class/issues/32
+
 # v0.8.2 2022-03-08
 
 - Hotfix for missing `to_proc` in `Constraint`
