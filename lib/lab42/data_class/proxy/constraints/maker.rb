@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "lab42/data_class/constraints/constraint"
+require_relative "../../constraints/constraint"
 module Lab42
   module DataClass
     class Proxy

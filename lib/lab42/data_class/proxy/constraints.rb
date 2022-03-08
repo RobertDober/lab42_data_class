@@ -5,9 +5,9 @@ module Lab42
   module DataClass
     class Proxy
       module Constraints
-        def check_constraints_against_defaults(constraints)
+        def check_constraints_against_defaults
           errors = constraints
-                   .map(&_check_constraint_against_default)
+                   .flat_map(&_check_constraint_against_default)
                    .compact
           raise ConstraintError, errors.join("\n\n") unless errors.empty?
         end
@@ -19,7 +19,7 @@ module Lab42
                   "constraints cannot be defined for undefined attributes #{errors.inspect}"
           end
 
-          check_constraints_against_defaults(constraints)
+          check_constraints_against_defaults
         end
 
         private
@@ -32,9 +32,11 @@ module Lab42
           end
         end
 
-        def _check_constraint_against_default_value(attr, value, constraint)
-          unless Maker.make_constraint(constraint).(value)
-            "default value #{value.inspect} is not allowed for attribute #{attr.inspect}"
+        def _check_constraint_against_default_value(attr, value, constraints)
+          constraints.map do |constraint|
+            unless constraint.(value)
+              "default value #{value.inspect} is not allowed for attribute #{attr.inspect}"
+            end
           end
         rescue StandardError => e
           "constraint error during validation of default value of attribute #{attr.inspect}\n  #{e.message}"

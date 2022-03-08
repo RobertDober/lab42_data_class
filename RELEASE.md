@@ -1,3 +1,7 @@
+# v0.8.2 2022-03-08
+
+- Hotfix for missing `to_proc` in `Constraint`
+
 # v0.8.1 2022-03-08
 
 - Fix for unfrozen attributes, now `DataClass` instances are deeply immutable
