@@ -5,7 +5,7 @@ RSpec.describe Lab42::DataClass do
       Class.new do
         extend Lab42::DataClass
 
-        attributes :name, children: List(0)
+        attributes :name, children: Nil
         constraint :children, ListOf(Numeric)
       end
     end

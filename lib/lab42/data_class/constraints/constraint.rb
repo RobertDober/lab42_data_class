@@ -7,8 +7,12 @@ module Lab42
       class Constraint
         attr_reader :name, :function
 
-        def call(value) = function.(value)
+        def call(value)
+          function.(value)
+        end
+
         def setter_constraint? = false
+        def to_proc = function
         def to_s = "Constraint<#{name}>"
 
         private
