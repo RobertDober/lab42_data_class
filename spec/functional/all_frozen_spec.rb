@@ -1,14 +1,16 @@
 RSpec.describe Lab42::DataClass do
+  require 'lab42/data_class/builtin_constraints'
   context "all frozen" do
     let :one do
       Class.new do
         extend Lab42::DataClass
 
-        attributes :name, children: []
+        attributes :name, children: List(0)
+        constraint :children, ListOf(Numeric)
       end
     end
     let(:i1) { one.new(name: "") }
-    let(:two) { DataClass(:id, atts: {}) }
+    let(:two) { DataClass(:id, atts: List()).with_constraint(atts: ListOf(String)) }
     let(:i2) { two.new(id: 2) }
 
     it "one's are frozen" do
