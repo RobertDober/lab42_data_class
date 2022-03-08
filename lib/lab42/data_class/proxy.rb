@@ -213,7 +213,7 @@ module Lab42
 
       def _init(data_class_instance, params)
         params.each do |key, value|
-          data_class_instance.instance_variable_set("@#{key}", value)
+          data_class_instance.instance_variable_set("@#{key}", value.freeze)
         end
       end
     end
