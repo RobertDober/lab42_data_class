@@ -1,3 +1,7 @@
+# v0.8.1 2022-03-08
+
+- Fix for unfrozen attributes, now `DataClass` instances are deeply immutable
+
 # v0.8.0 2022-03-06
 
 - Implement `PairOf` and `TripleOf` constraint  https://github.com/RobertDober/lab42_data_class/issues/22
