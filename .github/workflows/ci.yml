@@ -32,6 +32,9 @@ jobs:
       - name: Rubocop
         run: bundle exec rubocop
 
+      - name: Speculations
+        run: bundle exec speculate
+
       - name: Tests
         run: bundle exec rspec
 
