@@ -1,3 +1,9 @@
+# v0.8.3 2022-03-09
+
+- Convenience attribute setter for `ListOf` attributes: `set_car` https://github.com/RobertDober/lab42_data_class/issues/34
+
+- And chainable setters with `.with_attribute(name){ | setter | setter.update(1).push(2).shift }` e.g.
+
 # v0.8.3 2022-03-08
 
 - Fix cons on Nil error https://github.com/RobertDober/lab42_data_class/issues/32
