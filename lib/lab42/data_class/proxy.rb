@@ -110,6 +110,14 @@ module Lab42
         end
       end
 
+      def _define_instance_methods
+        klass.module_eval(&_define_access)
+        klass.module_eval(&_define_to_h)
+        klass.module_eval(&_define_merge)
+        klass.module_eval(&_define_set)
+        klass.module_eval(&_define_with_attribute)
+      end
+
       def _define_freezing_constructor
         proxy = self
         ->(*) do
@@ -157,10 +165,7 @@ module Lab42
 
       def _define_methods
         _define_singleton_methods(klass.singleton_class)
-        klass.module_eval(&_define_access)
-        klass.module_eval(&_define_to_h)
-        klass.module_eval(&_define_merge)
-        klass.module_eval(&_define_set)
+        _define_instance_methods
       end
 
       def _define_singleton_methods(singleton)
@@ -202,11 +207,23 @@ module Lab42
       def _define_set
         proxy = self
         ->(*) do
-          define_method :set do |attribute|
+          define_method :set do |attribute, return_setter: false|
             setter_constraint = proxy.setter_attributes.fetch(attribute) do
               raise UndefinedSetterError, "There is no constraint implementing a setter for attribute #{attribute}"
             end
-            setter_constraint.setter_for(attribute:, instance: self)
+            setter_constraint.setter_for(attribute:, instance: self, return_setter:)
+          end
+        end
+      end
+
+      def _define_with_attribute
+        proxy = self
+        ->(*) do
+          define_method :with_attribute do |attribute, &blk|
+            setter_constraint = proxy.setter_attributes.fetch(attribute) do
+              raise UndefinedSetterError, "There is no constraint implementing a setter for attribute #{attribute}"
+            end
+            blk.(setter_constraint.setter_for(attribute:, instance: self, return_setter: true)).instance
           end
         end
       end

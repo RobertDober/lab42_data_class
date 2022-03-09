@@ -8,13 +8,15 @@ module Lab42
 
         def setter_constraint? = true
 
-        def setter_for(attribute:, instance:)
+        def setter_for(attribute:, instance:, return_setter: false)
           attribute_setter.new(
             attribute:,
             constraint: self,
-            instance:
+            instance:,
+            return_setter:
           )
         end
+
         private
 
         def initialize(constraint:, **other)

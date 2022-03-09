@@ -4,6 +4,7 @@ Given this setup
 ```ruby
     require "lab42/data_class/builtin_constraints"
     let(:constraint_error) { Lab42::DataClass::ConstraintError }
+    let(:undefined_setter_error) { Lab42::DataClass::UndefinedSetterError }
 ```
 ## Context: `ListOf(constraint)`
 
@@ -35,9 +36,60 @@ But we cannot call the setter for a different attribute
     expect do
       fours.set(:name)
     end
-      .to raise_error(Lab42::DataClass::UndefinedSetterError)
-
+      .to raise_error(undefined_setter_error)
 ```
+
+But changing the `car` is tedious
+```ruby
+    singleton = DataClass(:list).with_constraint(list: ListOf(String)).new(list: List("alpha"))
+    changed =
+      singleton
+        .set(:list)
+        .cdr
+        .set(:list)
+        .cons("beta")
+
+    expect(changed.list.car).to eq("beta")
+```
+
+Then we can use `set_car` easier:
+```ruby
+    singleton = DataClass(:list).with_constraint(list: ListOf(String)).new(list: List("alpha"))
+    changed =
+      singleton
+        .set(:list)
+        .set_car("gamma")
+
+    expect(changed.list.car).to eq("gamma")
+```
+
+If we want to use arbitrary setters in a chain we can use the `with_attribute` method
+
+Then we chain as follows
+```ruby
+    list = DataClass(list: Nil).with_constraint(list: ListOf(Numeric)).new
+    new =
+      list.with_attribute(:list){ |setter| setter.cons(3).cons(2).cons(1) }
+    expect(new.list.to_a).to eq([*1..3])
+```
+
+But again, this only works for attributes with attribute setter constraints
+```ruby
+    expect do
+      DataClass(value: "hello").new.with_attribute(:value){}
+    end
+      .to raise_error(undefined_setter_error)
+```
+
+And even in the case of _other_ constraints
+```ruby
+    expect do
+      DataClass(value: "hello").with_constraint(value: String).new.with_attribute(:value){}
+    end
+      .to raise_error(undefined_setter_error)
+    
+```
+
 
 ## Context: `PairOf(left_constraint, right_constraint)`
 

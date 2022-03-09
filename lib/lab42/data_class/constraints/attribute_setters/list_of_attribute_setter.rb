@@ -18,6 +18,12 @@ module Lab42
           def cdr
             _set_attr!(_value.cdr)
           end
+
+          def set_car(value)
+            constraint.constraint.(value) or raise ConstraintError,
+                                                   "cannot set value #{value} in set(#{attribute}).cons"
+            _set_attr!(_value.cdr.cons(value))
+          end
         end
       end
     end
