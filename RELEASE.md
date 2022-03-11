@@ -1,3 +1,8 @@
+# v0.9.0 2022-03-11
+
+- Double Linked List `DList` and associatted Attribute Setting Constraint
+`DListOf` https://github.com/RobertDober/lab42_data_class/issues/37
+
 # v0.8.3 2022-03-09
 
 - Convenience attribute setter for `ListOf` attributes: `set_car` https://github.com/RobertDober/lab42_data_class/issues/34
