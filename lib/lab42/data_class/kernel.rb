@@ -9,6 +9,10 @@ module Kernel
     proxy.define_class!
   end
 
+  def DList(*elements)
+    Lab42::DList.new(*elements)
+  end
+
   def List(*elements)
     Lab42::List.new(*elements)
   end

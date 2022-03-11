@@ -90,6 +90,9 @@ Style/ModuleFunction:
 Style/RescueModifier:
   Enabled: false
 
+Style/StabbyLambdaParentheses:
+  Enabled: false
+
 Style/StringLiterals:
   Enabled: false
 

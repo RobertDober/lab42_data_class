@@ -146,4 +146,12 @@ RSpec.describe "README.md" do
       expect(three.cdr).to eq(List(*%w[b c]))
     end
   end
+  # README.md:289
+  context "`DList`" do
+    # README.md:294
+    let(:dlist) { DList(*%w[a b c]) }
+    it "it can be reversed (without reversing it) (README.md:299)" do
+      expect(dlist.reverse.to_a).to eq(%w[c b a])
+    end
+  end
 end

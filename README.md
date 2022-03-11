@@ -286,6 +286,21 @@ Then this becomes really a _linked_list_
 
 For all details please consult the [List speculations](speculations/LIST.md)
 
+## Context: `DList`
+
+A double linked _list_ 
+
+Given a `DList`
+```ruby
+    let(:dlist) { DList(*%w[a b c]) }
+```
+
+Then it can be reversed (without reversing it)
+```ruby
+    expect(dlist.reverse.to_a).to eq(%w[c b a])
+```
+
+For all details please consult the [DList speculations](speculations/DLIST.md)
 # LICENSE
 
 Copyright 2022 Robert Dober robert.dober@gmail.com
