@@ -115,6 +115,7 @@ module Lab42
         klass.module_eval(&_define_to_h)
         klass.module_eval(&_define_merge)
         klass.module_eval(&_define_set)
+        klass.module_eval(&_define_update)
         klass.module_eval(&_define_with_attribute)
       end
 
@@ -159,6 +160,21 @@ module Lab42
           define_method :merge do |**params|
             values = to_h.merge(params)
             self.class.send(:_new_from_merge, params, values)
+          end
+        end
+      end
+
+      def _define_update
+        ->(*) do
+          define_method :update do |key = nil, &blk|
+            value = key ? self[key] : self
+            new_value = blk.(value)
+            if key
+              values = to_h.merge(key => new_value)
+              return self.class.send(:_new_from_merge, values, values)
+            end
+
+            self.class.send(:_new_from_merge, new_value, new_value)
           end
         end
       end

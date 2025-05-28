@@ -98,6 +98,21 @@ And we can derive new instances
     expect(simple_instance.to_h).to eq(a: 1, b: 2)
 ```
 
+And we can also update values with a block
+```ruby
+    new_instance = simple_instance.update(:b) { it.succ }
+    expect(new_instance.to_h).to eq(a: 1, b: 3)
+    expect(simple_instance.to_h).to eq(a: 1, b: 2)
+```
+
+And if we want to create a new instance with values from the old we can use the parameterless form
+```ruby
+    new_instance = simple_instance.update do 
+      { a: it.a.succ, b: it.b.pred }
+    end
+    expect(new_instance.to_h).to eq(a: 2, b: 1)
+    expect(simple_instance.to_h).to eq(a: 1, b: 2)
+```
 For detailed speculations please see [here](speculations/DATA_CLASSES.md)
 
 ## Context: `DataClass` function
@@ -289,10 +304,14 @@ For all details please consult the [List speculations](speculations/LIST.md)
 # LICENSE
 
 - versions < 0.9
+
   Copyright 2022 Robert Dober robert.dober@gmail.com
+
   Apache-2.0 
 
 - versions >= 0.9
+
   Copyright 2025 Robert Dober robert.dober@gmail.com
+
   GNU AFFERO GENERAL PUBLIC LICENSE v3.0 or later   [c.f LICENSE](LICENSE)
 <!--SPDX-License-Identifier: AGPL-3.0-or-later-->
