@@ -288,7 +288,11 @@ For all details please consult the [List speculations](speculations/LIST.md)
 
 # LICENSE
 
-Copyright 2022 Robert Dober robert.dober@gmail.com
+- versions < 0.9
+  Copyright 2022 Robert Dober robert.dober@gmail.com
+  Apache-2.0 
 
-Apache-2.0 [c.f LICENSE](LICENSE)
-<!-- SPDX-License-Identifier: Apache-2.0-->
+- versions >= 0.9
+  Copyright 2025 Robert Dober robert.dober@gmail.com
+  GNU AFFERO GENERAL PUBLIC LICENSE v3.0 or later   [c.f LICENSE](LICENSE)
+<!--SPDX-License-Identifier: AGPL-3.0-or-later-->

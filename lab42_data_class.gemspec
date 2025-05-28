@@ -19,7 +19,8 @@ Gem::Specification.new do |s|
   s.files       = Dir.glob("lib/**/*.rb")
   s.files      += %w[LICENSE README.md]
   s.homepage    = "https://github.com/robertdober/lab42_data_class"
-  s.licenses    = %w[Apache-2.0]
+  s.licenses    = %w[AGPL-3.0-or-later]
 
-  s.required_ruby_version = '>= 3.1.0'
+  s.required_ruby_version = '>= 3.4.1'
 end
+# SPDX-License-Identifier: AGPL-3.0-or-later
