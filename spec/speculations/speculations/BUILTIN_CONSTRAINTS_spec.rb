@@ -146,7 +146,7 @@ RSpec.describe "speculations/BUILTIN_CONSTRAINTS.md" do
       # speculations/BUILTIN_CONSTRAINTS.md:190
       context "NilOr(constraint)" do
         # speculations/BUILTIN_CONSTRAINTS.md:196
-        let(:maybe) { DataClass(number: nil).with_constraint(number: NilOr(Fixnum)) }
+        let(:maybe) { DataClass(number: nil).with_constraint(number: NilOr(Integer)) }
         it "we get (speculations/BUILTIN_CONSTRAINTS.md:204)" do
           expect(maybe.new.number).to be_nil
           expect(maybe.new(number: 42).number).to eq(42)

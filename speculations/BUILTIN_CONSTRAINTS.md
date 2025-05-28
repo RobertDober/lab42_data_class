@@ -194,10 +194,10 @@ Therefore a `nil` value is valid and all other values are valid iff they satisfy
 
 Given such a constraint
 ```ruby
-    let(:maybe) { DataClass(number: nil).with_constraint(number: NilOr(Fixnum)) }
+    let(:maybe) { DataClass(number: nil).with_constraint(number: NilOr(Integer)) }
 ```
 
-**N.B.** That constraints are checked against _default values_ and therefore the constraint `Fixnum` was not
+**N.B.** That constraints are checked against _default values_ and therefore the constraint `Integer` was not
 even applicable under this definition
 
 Then we get

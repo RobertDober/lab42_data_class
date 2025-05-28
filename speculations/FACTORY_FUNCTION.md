@@ -311,7 +311,7 @@ Then we can use the class as a constraint
 
 Then we can also use instance methods to implement our `Positive`
 ```ruby
-    positive_by_instance_method = positive.with_constraint(value: Fixnum.instance_method(:positive?))
+    positive_by_instance_method = positive.with_constraint(value: Integer.instance_method(:positive?))
 
     expect(positive_by_instance_method.new(value: 1).value).to eq(1)
     expect{positive_by_instance_method.new(value: 0)}.to raise_error(constraint_error)

@@ -95,7 +95,7 @@ And even in the case of _other_ constraints
 
 Given a `DataClass` with a `PairOf` constraint
 ```ruby
-    let(:pairs) { DataClass(:entry).with_constraint(entry: PairOf(Symbol, Fixnum)) }
+    let(:pairs) { DataClass(:entry).with_constraint(entry: PairOf(Symbol, Integer)) }
     let(:instance) { pairs.new(entry: Pair(:a, 1)) }
 ```
 
@@ -121,7 +121,7 @@ But the constraints are still validated for the changing value
 
 Given a `DataClass` with a `TripleOf` constraint
 ```ruby
-    let(:triple) { DataClass(:value).with_constraint(value: TripleOf(Symbol, Fixnum, String)) }
+    let(:triple) { DataClass(:value).with_constraint(value: TripleOf(Symbol, Integer, String)) }
     let(:instance) { triple.new(value: Triple(:a, 1, "hello")) }
 ```
 

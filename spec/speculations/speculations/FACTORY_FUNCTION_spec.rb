@@ -159,7 +159,7 @@ RSpec.describe "speculations/FACTORY_FUNCTION.md" do
     it "therefore defaultless attributes cannot have a constraint that is violated by a nil value (speculations/FACTORY_FUNCTION.md:216)" do
       error_head = "constraint error during validation of default value of attribute :value"
       error_body = "  undefined method `>' for nil:NilClass"
-      error_message = [error_head, error_body].join("\n")
+      error_message = "constraint error during validation of default value of attribute :value\n  undefined method '>' for nil"
 
       expect{ DataClass(value: nil).with_constraint(value: -> { _1 > 0 }) }
       .to raise_error(Lab42::DataClass::ConstraintError, /#{error_message}/)
@@ -210,7 +210,7 @@ RSpec.describe "speculations/FACTORY_FUNCTION.md" do
         expect{ container.new(value: 42) }.to raise_error(constraint_error, "value 42 is not allowed for attribute :value")
       end
       it "we can also use instance methods to implement our `Positive` (speculations/FACTORY_FUNCTION.md:313)" do
-        positive_by_instance_method = positive.with_constraint(value: Fixnum.instance_method(:positive?))
+        positive_by_instance_method = positive.with_constraint(value: Integer.instance_method(:positive?))
 
         expect(positive_by_instance_method.new(value: 1).value).to eq(1)
         expect{positive_by_instance_method.new(value: 0)}.to raise_error(constraint_error)

@@ -75,7 +75,7 @@ RSpec.describe "speculations/ATTRIBUTE_SETTING_CONSTRAINTS.md" do
   # speculations/ATTRIBUTE_SETTING_CONSTRAINTS.md:94
   context "`PairOf(left_constraint, right_constraint)`" do
     # speculations/ATTRIBUTE_SETTING_CONSTRAINTS.md:97
-    let(:pairs) { DataClass(:entry).with_constraint(entry: PairOf(Symbol, Fixnum)) }
+    let(:pairs) { DataClass(:entry).with_constraint(entry: PairOf(Symbol, Integer)) }
     let(:instance) { pairs.new(entry: Pair(:a, 1)) }
     it "we can just create a new instance with a new first element of the pair (speculations/ATTRIBUTE_SETTING_CONSTRAINTS.md:103)" do
       expect(instance.set(:entry).first_element(:b).entry).to eq(Pair(:b, 1))
@@ -93,7 +93,7 @@ RSpec.describe "speculations/ATTRIBUTE_SETTING_CONSTRAINTS.md" do
   # speculations/ATTRIBUTE_SETTING_CONSTRAINTS.md:120
   context "`TripleOf(first_constraint, second_constraint, third_constraint)`" do
     # speculations/ATTRIBUTE_SETTING_CONSTRAINTS.md:123
-    let(:triple) { DataClass(:value).with_constraint(value: TripleOf(Symbol, Fixnum, String)) }
+    let(:triple) { DataClass(:value).with_constraint(value: TripleOf(Symbol, Integer, String)) }
     let(:instance) { triple.new(value: Triple(:a, 1, "hello")) }
     it "we can just create a new instance with a new first element of the triple (speculations/ATTRIBUTE_SETTING_CONSTRAINTS.md:129)" do
       expect(instance.set(:value).first_element(:b).value).to eq(Triple(:b, 1, "hello"))
