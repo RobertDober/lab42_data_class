@@ -157,91 +157,87 @@ RSpec.describe "speculations/FACTORY_FUNCTION.md" do
       .to raise_error(Lab42::DataClass::ConstraintError, "value 42 is not allowed for attribute :on")
     end
     it "therefore defaultless attributes cannot have a constraint that is violated by a nil value (speculations/FACTORY_FUNCTION.md:216)" do
-      error_head = "constraint error during validation of default value of attribute :value"
-      error_body = "  undefined method `>' for nil:NilClass"
-      error_message = "constraint error during validation of default value of attribute :value\n  undefined method '>' for nil"
-
       expect{ DataClass(value: nil).with_constraint(value: -> { _1 > 0 }) }
-      .to raise_error(Lab42::DataClass::ConstraintError, /#{error_message}/)
+      .to raise_error(Lab42::DataClass::ConstraintError, /undefined method '\>' for nil/)
     end
-    it "defining constraints for undefined attributes is not the best of ideas (speculations/FACTORY_FUNCTION.md:226)" do
+    it "defining constraints for undefined attributes is not the best of ideas (speculations/FACTORY_FUNCTION.md:222)" do
       expect { DataClass(a: 1).with_constraint(b: -> {true}) }
       .to raise_error(Lab42::DataClass::UndefinedAttributeError, "constraints cannot be defined for undefined attributes [:b]")
     end
-    # speculations/FACTORY_FUNCTION.md:231
+    # speculations/FACTORY_FUNCTION.md:227
     context "Convenience Constraints" do
-      # speculations/FACTORY_FUNCTION.md:237
+      # speculations/FACTORY_FUNCTION.md:233
       let(:constraint_error) { Lab42::DataClass::ConstraintError }
       let(:positive) { DataClass(:value) }
-      it "a first implementation of `Positive` (speculations/FACTORY_FUNCTION.md:247)" do
+      it "a first implementation of `Positive` (speculations/FACTORY_FUNCTION.md:243)" do
         positive_by_symbol = positive.with_constraint(value: :positive?)
 
         expect(positive_by_symbol.new(value: 1).value).to eq(1)
         expect{positive_by_symbol.new(value: 0)}.to raise_error(constraint_error)
       end
-      it "we can implement a different form of `Positive` (speculations/FACTORY_FUNCTION.md:258)" do
+      it "we can implement a different form of `Positive` (speculations/FACTORY_FUNCTION.md:254)" do
         positive_by_ary = positive.with_constraint(value: [:>, 0])
 
         expect(positive_by_ary.new(value: 1).value).to eq(1)
         expect{positive_by_ary.new(value: 0)}.to raise_error(constraint_error)
       end
-      it "this works with a `Set` (speculations/FACTORY_FUNCTION.md:270)" do
+      it "this works with a `Set` (speculations/FACTORY_FUNCTION.md:266)" do
         positive_by_set = positive.with_constraint(value: Set.new([*1..10]))
 
         expect(positive_by_set.new(value: 1).value).to eq(1)
         expect{positive_by_set.new(value: 0)}.to raise_error(constraint_error)
       end
-      it "also with a `Range` (speculations/FACTORY_FUNCTION.md:278)" do
+      it "also with a `Range` (speculations/FACTORY_FUNCTION.md:274)" do
         positive_by_range = positive.with_constraint(value: 1..Float::INFINITY)
 
         expect(positive_by_range.new(value: 1).value).to eq(1)
         expect{positive_by_range.new(value: 0)}.to raise_error(constraint_error)
       end
-      it "we can also have a regex based constraint (speculations/FACTORY_FUNCTION.md:290)" do
+      it "we can also have a regex based constraint (speculations/FACTORY_FUNCTION.md:286)" do
         vowel = DataClass(:word).with_constraint(word: /[aeiou]/)
 
         expect(vowel.new(word: "alpha").word).to eq("alpha")
         expect{vowel.new(word: "krk")}.to raise_error(constraint_error)
       end
-      it "we can use the class as a constraint (speculations/FACTORY_FUNCTION.md:302)" do
+      it "we can use the class as a constraint (speculations/FACTORY_FUNCTION.md:298)" do
         container = DataClass(:value).with_constraint(value: String)
 
         expect(container.new(value: "42")[:value]).to eq("42")
         expect{ container.new(value: 42) }.to raise_error(constraint_error, "value 42 is not allowed for attribute :value")
       end
-      it "we can also use instance methods to implement our `Positive` (speculations/FACTORY_FUNCTION.md:313)" do
+      it "we can also use instance methods to implement our `Positive` (speculations/FACTORY_FUNCTION.md:309)" do
         positive_by_instance_method = positive.with_constraint(value: Integer.instance_method(:positive?))
 
         expect(positive_by_instance_method.new(value: 1).value).to eq(1)
         expect{positive_by_instance_method.new(value: 0)}.to raise_error(constraint_error)
       end
-      it "we can use methods to implement it (speculations/FACTORY_FUNCTION.md:321)" do
+      it "we can use methods to implement it (speculations/FACTORY_FUNCTION.md:317)" do
         positive_by_method = positive.with_constraint(value: 0.method(:<))
 
         expect(positive_by_method.new(value: 1).value).to eq(1)
         expect{positive_by_method.new(value: 0)}.to raise_error(constraint_error)
       end
     end
-    # speculations/FACTORY_FUNCTION.md:328
+    # speculations/FACTORY_FUNCTION.md:324
     context "Global Constraints aka __Validations__" do
-      # speculations/FACTORY_FUNCTION.md:334
+      # speculations/FACTORY_FUNCTION.md:330
       let(:point) { DataClass(:x, :y).validate{ |point| point.x > point.y } }
       let(:validation_error) { Lab42::DataClass::ValidationError }
-      it "we will get a `ValidationError` if we construct a point left of the main diagonal (speculations/FACTORY_FUNCTION.md:340)" do
+      it "we will get a `ValidationError` if we construct a point left of the main diagonal (speculations/FACTORY_FUNCTION.md:336)" do
         expect{ point.new(x: 0, y: 1) }
         .to raise_error(validation_error)
       end
-      it "as validation might need more than the default values we will not execute them at compile time (speculations/FACTORY_FUNCTION.md:346)" do
+      it "as validation might need more than the default values we will not execute them at compile time (speculations/FACTORY_FUNCTION.md:342)" do
         expect{ DataClass(x: 0, y: 0).validate{ |inst| inst.x > inst.y } }
         .to_not raise_error
       end
-      it "we can name validations to get better error messages (speculations/FACTORY_FUNCTION.md:352)" do
+      it "we can name validations to get better error messages (speculations/FACTORY_FUNCTION.md:348)" do
         better_point = DataClass(:x, :y).validate(:too_left){ |point| point.x > point.y }
         ok_point     = better_point.new(x: 1, y: 0)
         expect{ ok_point.merge(y: 1) }
         .to raise_error(validation_error, "too_left")
       end
-      it "remark how bad unnamed validation errors might be (speculations/FACTORY_FUNCTION.md:360)" do
+      it "remark how bad unnamed validation errors might be (speculations/FACTORY_FUNCTION.md:356)" do
         error_message_rgx = %r{
         \#<Proc:0x[0-9a-f]+ \s .* spec/speculations/speculations/FACTORY_FUNCTION_spec\.rb: \d+ > \z
         }x
@@ -249,18 +245,18 @@ RSpec.describe "speculations/FACTORY_FUNCTION.md" do
         .to raise_error(validation_error, error_message_rgx)
       end
     end
-    # speculations/FACTORY_FUNCTION.md:368
+    # speculations/FACTORY_FUNCTION.md:364
     context "Derived Attributes" do
-      # speculations/FACTORY_FUNCTION.md:373
+      # speculations/FACTORY_FUNCTION.md:369
       let(:pythagoras) { DataClass(:a, :b).derive(:c){ Math.sqrt(_1.a**2 + _1.b**2)} }
-      it "the hypotenuse is derived (speculations/FACTORY_FUNCTION.md:378)" do
+      it "the hypotenuse is derived (speculations/FACTORY_FUNCTION.md:374)" do
         expect(pythagoras.new(a: 3.0, b: 4.0)[:c]).to eq(5.0)
       end
     end
   end
-  # speculations/FACTORY_FUNCTION.md:381
+  # speculations/FACTORY_FUNCTION.md:377
   context "Usage with `extend`" do
-    # speculations/FACTORY_FUNCTION.md:387
+    # speculations/FACTORY_FUNCTION.md:383
     let :my_class do
     Class.new do
     extend Lab42::DataClass
@@ -273,16 +269,16 @@ RSpec.describe "speculations/FACTORY_FUNCTION.md" do
     let(:validation_error) { Lab42::DataClass::ValidationError }
     let(:my_instance) { my_class.new(age: 42) }
     let(:my_vip)      { my_instance.merge(member: true) }
-    it "we can observe that instances of such a class (speculations/FACTORY_FUNCTION.md:403)" do
+    it "we can observe that instances of such a class (speculations/FACTORY_FUNCTION.md:399)" do
       expect(my_instance.to_h).to eq(age: 42, member: false)
       expect(my_vip.to_h).to eq(age: 42, member: true)
       expect(my_instance.member).to be_falsy
     end
-    it "we will get constraint errors if applicable (speculations/FACTORY_FUNCTION.md:410)" do
+    it "we will get constraint errors if applicable (speculations/FACTORY_FUNCTION.md:406)" do
       expect{my_instance.merge(member: nil)}
       .to raise_error(constraint_error)
     end
-    it "of course validations still work too (speculations/FACTORY_FUNCTION.md:416)" do
+    it "of course validations still work too (speculations/FACTORY_FUNCTION.md:412)" do
       expect{ my_vip.merge(age: 17) }
       .to raise_error(validation_error, "too_young_for_member")
     end

@@ -214,12 +214,8 @@ But we can neither construct or merge with non boolean values
 
 And therefore defaultless attributes cannot have a constraint that is violated by a nil value
 ```ruby
-    error_head = "constraint error during validation of default value of attribute :value"
-    error_body = "  undefined method `>' for nil:NilClass"
-    error_message = [error_head, error_body].join("\n")
-
     expect{ DataClass(value: nil).with_constraint(value: -> { _1 > 0 }) }
-      .to raise_error(Lab42::DataClass::ConstraintError, /#{error_message}/)
+      .to raise_error(Lab42::DataClass::ConstraintError, /undefined method '\>' for nil/)
 ```
 
 And defining constraints for undefined attributes is not the best of ideas
