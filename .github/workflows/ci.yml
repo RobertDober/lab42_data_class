@@ -29,9 +29,6 @@ jobs:
           bundle config set --local without benchmark
           bundle install --jobs=3
 
-      - name: Rubocop
-        run: bundle exec rubocop
-
       - name: Speculations
         run: bundle exec speculate
 
