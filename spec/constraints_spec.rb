@@ -15,6 +15,24 @@ RSpec.describe Lab42::DataClass do
       end
         .to raise_error(described_class::ConstraintError, "default value -1 is not allowed for attribute :a")
     end
+
+    it "needs a block" do
+      expect do
+        Class.new do
+          extend Lab42::DataClass
+          validate
+        end
+      end
+        .to raise_error(ArgumentError)
+
+      expect do
+        Class.new do
+          extend Lab42::DataClass
+          validate { true }
+        end
+      end
+        .not_to raise_error
+    end
   end
 end
 # SPDX-License-Identifier: Apache-2.0

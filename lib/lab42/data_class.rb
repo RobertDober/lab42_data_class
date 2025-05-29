@@ -50,7 +50,7 @@ module Lab42
     end
 
     def validate(&blk)
-      raise ArgumentError, "validation block missing" unless block
+      raise ArgumentError, "validation block missing" unless blk
 
       __data_class_proxy__.define_validation(&blk)
       __data_class_proxy__.define_class!

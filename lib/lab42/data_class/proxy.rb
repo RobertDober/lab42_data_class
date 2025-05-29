@@ -58,8 +58,8 @@ module Lab42
         klass.module_eval(&_define_derived_attribute(name, &blk))
       end
 
-      def init(data_class, **params)
-        _init(data_class, defaults.merge(params))
+      def init(data_class, **params, &block)
+        _init(data_class, defaults.merge(params), &block)
       end
 
       def set_actual_params(params)
@@ -135,10 +135,10 @@ module Lab42
       def _define_merging_constructor
         proxy = self
         ->(*) do
-          define_method :_new_from_merge do |new_params, params|
+          define_method :_new_from_merge do |new_params, params, &b|
             allocate.tap do |o|
               proxy.check!(new_params, {})
-              o.send(:initialize, **params)
+              o.send(:initialize, **params, &b)
             end.freeze
           end
           private :_new_from_merge
@@ -148,8 +148,8 @@ module Lab42
       def _define_initializer
         proxy = self
         ->(*) do
-          define_method :initialize do |**params|
-            proxy.init(self, **params)
+          define_method :initialize do |**params, &block|
+            proxy.init(self, **params, &block)
             proxy.validate!(self)
           end
         end
@@ -244,9 +244,13 @@ module Lab42
         end
       end
 
-      def _init(data_class_instance, params)
+      def _init(data_class_instance, params, &block)
         params.each do |key, value|
-          data_class_instance.instance_variable_set("@#{key}", value.freeze)
+          data_class_instance.instance_variable_set("@#{key}", value)
+        end
+        data_class_instance.instance_eval(&block) if block
+        params.each do |_, value|
+          value.freeze
         end
       end
     end
