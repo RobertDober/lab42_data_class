@@ -266,7 +266,7 @@ And of course validation is also carried out when new instances are derived
 
 #### Context: Validation, a code smell?
 
-I guess to many validations might in fact be a code smell, and even the simple example above might be better
+I guess too many validations might in fact be a code smell, and even the simple example above might be better
 modelled with _Constraints_ in mind
 
 Given a Person module

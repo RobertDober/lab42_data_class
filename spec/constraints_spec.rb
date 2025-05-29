@@ -24,7 +24,9 @@ RSpec.describe Lab42::DataClass do
         end
       end
         .to raise_error(ArgumentError)
+    end
 
+    it "is happy with a block" do
       expect do
         Class.new do
           extend Lab42::DataClass

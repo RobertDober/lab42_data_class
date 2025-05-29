@@ -12,7 +12,12 @@ module Lab42
           raise ValidationError, errors.join("\n") unless errors.empty?
         end
 
+        def define_validation(&blk)
+          validations << [nil, blk]
+        end
+
         private
+
 
         def _define_with_validations
           proxy = self
