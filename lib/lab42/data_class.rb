@@ -48,6 +48,13 @@ module Lab42
       __data_class_proxy__.define_constraints(member => constraint || block)
       __data_class_proxy__.define_class!
     end
+
+    def validate(&blk)
+      raise ArgumentError, "validation block missing" unless block
+
+      __data_class_proxy__.define_validation(&blk)
+      __data_class_proxy__.define_class!
+    end
   end
 end
-#  SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: AGPL-3.0-or-later
