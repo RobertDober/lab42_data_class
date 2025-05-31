@@ -5,17 +5,32 @@
 [![Gem Version](http://img.shields.io/gem/v/lab42_data_class.svg)](https://rubygems.org/gems/lab42_data_class)
 [![Gem Downloads](https://img.shields.io/gem/dt/lab42_data_class.svg)](https://rubygems.org/gems/lab42_data_class)
 
+# Usage
 
-# Lab42::DataClass
+```sh
+  gem install lab42_data_class
+```
 
-An Immutable DataClass for Ruby
+With bundler
 
-Exposes a class factory function `Kernel::DataClass` and a module `Lab42::DataClass` which can
-extend classes to become _Data Classes_.
+```ruby
+  gem 'lab42_data_class'
+```
 
-Also exposes two _tuple_ classes, `Pair` and `Triple`
+In your code
 
-## Synopsis
+```ruby
+require 'lab42/data_class'
+```
+
+# Synopsis
+
+The `lab42_data_class` gem exposes the `Lab42::DataClass` and `DataClass` constructor function as
+well as the `Lab42::CheckedClass` mixin (the latter since version 0.9.2).
+
+It also exposes two _tuple_ classes, `Pair` and `Triple` of type `Lab42::DataClass`
+
+# `Lab42::DataClass` An Immutable DataClass for Ruby
 
 Having immutable Objects has many well known advantages that I will not ponder upon in detail here.
 
@@ -36,23 +51,25 @@ Therefore we can summarise the features (or not so features, that is for you to 
   - Declaration of **dependent attributes** which are memoized (thank you _Immutability_)
   - Inheritance with **mixin of other dataclasses** (multiple if you must)
 
-## Usage
+# `Lab42::CheckedClass` A mutable but checked behavior class
 
-```sh
-  gem install lab42_data_class
-```
+In some contexts immutability is just too difficult to implement and mutable code can be much easier
+to read and maintain. It also _might_ be needed for performance.
 
-With bundler
+For these cases (an example would be the gem [Doc2Busted](https://codeberg.org/lab419/doc2busted.git))
+having all modifications be executed within checks of predefined constraints reduces the risk of bugs
+in the mutable programming style.
 
-```ruby
-  gem 'lab42_data_class'
-```
+Like its immutable sibbling, `Lab42::CheckedClass` offers:
 
-In your code
-
-```ruby
-require 'lab42/data_class'
-```
+  - Attributes are predefined and can have **default values**
+  - Construction with _keyword arguments_, **exclusively**
+  - Conversion to `Hash` instances (if you must)
+  - Pattern matching exactly like `Hash` instances
+  - Possibility to impose **strong constraints** on attributes
+  - Predefined constraints and concise syntax for constraints
+  - Possibility to impose **arbitrary validation** (constraints on the whole object)
+  - Not yet: <stroke>Inheritance with **mixin of other dataclasses** (multiple if you must)</stroke>
 
 ## Speculations (literate specs)
 
